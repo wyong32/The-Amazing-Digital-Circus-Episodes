@@ -1,0 +1,147 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { explainedVideos } from "../../data/explained.js";
+import { episodes } from "../../data/episodes.js";
+import { pageSeo } from "../../seo/siteSeo.js";
+
+const seo = pageSeo.explained;
+const firstVideo = explainedVideos[0];
+const featuredVideo = explainedVideos[explainedVideos.length - 1];
+const analysisQueue = explainedVideos.filter((item) => item.id !== featuredVideo.id);
+const featuredEpisode = episodes.find((entry) => entry.addressBar === featuredVideo.episodeSlug);
+const evidenceLayers = ["Canon facts first", "Meaning after evidence", "Theory stays labeled"];
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Explained", href: "/explained" },
+];
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={featuredVideo.imageUrl}
+  imageAlt={featuredVideo.imageAlt}
+  breadcrumbs={breadcrumbs}
+>
+  <div class="circus-page">
+    <section class="page-hero">
+      <div class="container">
+        <div class="page-hero-split">
+          <div class="page-hero-panel">
+            <p class="page-hero-kicker">Original video analysis</p>
+            <h1>The Amazing Digital Circus Explained — Episode Analysis</h1>
+            <p class="page-hero-lede">
+              Episode-by-episode video essays for Pomni, Caine, Jax, Kinger, Gummigoo, C&A lore, hidden clues, and finale theory. Each entry separates confirmed evidence from interpretation before it reaches fan theory.
+            </p>
+          </div>
+          <aside class="page-hero-panel page-hero-aside neon-panel">
+            <p class="page-hero-kicker">Reading method</p>
+            <h3>How to use these pages</h3>
+            <ol class="method-list">
+              {evidenceLayers.map((layer) => (
+                <li>{layer}</li>
+              ))}
+            </ol>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="inner-section">
+      <div class="container">
+        <div class="explained-lead-grid">
+          <article class="explained-lead-card neon-panel">
+            <a href={`/explained/${featuredVideo.addressBar}`}>
+              <figure class="explained-lead-media">
+                <img src={featuredVideo.imageUrl} alt={featuredVideo.imageAlt} width="920" height="518" loading="eager" />
+                <figcaption>Start here · EP {String(featuredVideo.id).padStart(2, "0")}</figcaption>
+              </figure>
+              <div class="explained-lead-copy">
+                <p>{featuredVideo.videoStatus}</p>
+                <h2>{featuredVideo.listTitle}</h2>
+                <span>{featuredVideo.quickAnswer}</span>
+              </div>
+            </a>
+          </article>
+          <aside class="page-hero-panel page-hero-aside explained-bridge-panel neon-panel">
+            <p>Canon bridge</p>
+            <h2>Finale truth before finale theories</h2>
+            <span>Episode 9 pulls together copied consciousness, Jax's collapse, Caine's reduced authority, and the season's long-running memory question.</span>
+            {featuredEpisode && (
+              <a class="link-chip" href={`/episodes/${featuredEpisode.addressBar}`}>
+                Remember finale guide →
+              </a>
+            )}
+          </aside>
+        </div>
+
+        <header class="inner-section-header">
+          <p>Video essay index</p>
+          <h2>Nine explanations, one continuous trail</h2>
+        </header>
+        <div class="explained-index-grid">
+          {analysisQueue.map((item) => {
+            const episode = episodes.find((entry) => entry.addressBar === item.episodeSlug);
+            const focusTag =
+              item.id <= 3 ? "Character" : item.id <= 6 ? "System" : "Finale";
+            return (
+              <article class="explained-index-card neon-panel">
+                <a href={`/explained/${item.addressBar}`}>
+                  <figure class="explained-index-media">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.imageAlt}
+                      width="640"
+                      height="360"
+                      loading="lazy"
+                    />
+                    <span class="explained-index-ep">EP {String(item.id).padStart(2, "0")}</span>
+                    <span class="explained-index-tag">{focusTag}</span>
+                  </figure>
+                  <div class="explained-index-copy">
+                    <p>{episode?.shortTitle || "Episode analysis"}</p>
+                    <h2>{item.listTitle}</h2>
+                    <span>{item.quickAnswer}</span>
+                    {item.videoDuration && (
+                      <small>{item.videoDuration} · {item.videoStatus}</small>
+                    )}
+                  </div>
+                </a>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+
+    <section class="inner-section">
+      <div class="container">
+        <div class="explained-finale-bar neon-panel">
+          <div>
+            <p class="page-hero-kicker">Start the trail</p>
+            <h2>Read backward from the finale to the false exit</h2>
+            <span>Episode 9 gives the biggest answer, but Episode 1 is where Pomni, Caine, Kaufmo, and the exit-door rule first define the mystery.</span>
+          </div>
+          <a class="btn-sticker btn-sticker--gold" href={`/explained/${firstVideo.addressBar}`}>
+            {firstVideo.listTitle}
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+.method-list {
+  margin-top: 8px;
+  padding-left: 1.1em;
+  color: var(--color-cream-soft);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.method-list li + li {
+  margin-top: 5px;
+}
+</style>

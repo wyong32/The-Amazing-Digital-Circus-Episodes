@@ -1,0 +1,258 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { episodes } from "../data/episodes.js";
+import { explainedVideos } from "../data/explained.js";
+import { characters } from "../data/characters.js";
+import { guides } from "../data/guides.js";
+import { pageSeo } from "../seo/siteSeo.js";
+import { buildHomeSchema } from "../seo/jsonLd.js";
+
+const explainedLead = explainedVideos[explainedVideos.length - 1];
+const explainedList = explainedVideos;
+const coreCharacters = characters.slice(0, 8);
+const featuredGuides = guides;
+const endingGuide = guides.find((guide) => guide.addressBar === "the-amazing-digital-circus-ending-explained");
+
+const homeH1 =
+  "The Amazing Digital Circus Guide — Complete Episode Explained, Official Animation, Characters & H5 Game";
+const seo = pageSeo.home;
+const homeImage = explainedLead.imageUrl;
+const homeImageAlt = explainedLead.imageAlt;
+const jsonLd = buildHomeSchema();
+
+const marqueeItems = [
+  "STEP RIGHT UP",
+  "9 EPISODES EXPLAINED",
+  "CANON VS THEORY",
+  "UNOFFICIAL FAN GUIDE",
+  "THE DIGITAL CIRCUS",
+  "POMNI · CAINE · JAX",
+  "WATCH ORDER INSIDE",
+  "ABSTRACTION LORE",
+];
+
+const showTickets = [
+  { label: "Episodes", value: "9" },
+  { label: "Explained", value: "9" },
+  { label: "Characters", value: String(characters.length) },
+  { label: "Guides", value: String(guides.length) },
+];
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image={homeImage}
+  imageAlt={homeImageAlt}
+  jsonLd={jsonLd}
+>
+  <div class="circus-page page-home">
+  <section class="stage-hero">
+    <div class="stage-hero-glow" aria-hidden="true"></div>
+    <div class="container">
+      <div class="circus-marquee" aria-hidden="true">
+        <div class="circus-marquee-track">
+          {[...marqueeItems, ...marqueeItems].map((item) => (
+            <span>{item}</span>
+          ))}
+        </div>
+      </div>
+
+      <div class="stage-hero-grid">
+        <div class="stage-copy">
+          <div class="sticker-row" aria-hidden="true">
+            <span class="sticker sticker--tilt-l">Explained-first</span>
+            <span class="sticker sticker--tilt-r">Unofficial!!</span>
+            <span class="sticker sticker--pulse">Act IX Live</span>
+          </div>
+          <p class="stage-eyebrow">The Amazing Digital Circus · Unofficial Fan Guide</p>
+          <h1 class="stage-title">
+            <span class="stage-title-glitch" aria-hidden="true">{homeH1}</span>
+            {homeH1}
+          </h1>
+          <p class="stage-lede">
+            Your one-stop hub for <strong>The Amazing Digital Circus</strong> (TADC): official episode pages with YouTube embeds, runtime, release dates, and cast notes — plus deep-dive <strong>Explained</strong> essays, character evidence profiles, lore guides, and TADC Mind Games walkthroughs. Canon facts and fan theories are always labeled separately.
+          </p>
+          <div class="stage-actions">
+            <a class="btn-sticker btn-sticker--gold" href="/episodes">Browse Episodes</a>
+            <a class="btn-sticker btn-sticker--red" href="/explained">Read Explained</a>
+            <a class="btn-sticker btn-sticker--ghost" href="/guides">Lore Guides</a>
+          </div>
+          <div class="ticket-strip" aria-label="Site stats">
+            {showTickets.map((ticket) => (
+              <div class="ticket-stub">
+                <span>{ticket.label}</span>
+                <strong>{ticket.value}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <a class="stage-poster" href={`/explained/${explainedLead.addressBar}`} aria-label={`Read ${explainedLead.listTitle}`}>
+          <span class="poster-badge">EP {String(explainedLead.id).padStart(2, "0")} · FINALE</span>
+          <div class="poster-frame">
+            <img src={explainedLead.imageUrl} alt={explainedLead.imageAlt} width="480" height="270" loading="eager" />
+          </div>
+          <p class="poster-caption">{explainedLead.listTitle}</p>
+          <div class="poster-copy">
+            <p class="poster-excerpt">{explainedLead.quickAnswer.slice(0, 160)}…</p>
+            {endingGuide && (
+              <span class="poster-link">Ending guide →</span>
+            )}
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="stage-curtain-edge" aria-hidden="true"></div>
+  </section>
+
+  <section class="home-section">
+    <div class="container">
+      <header class="block-head">
+        <p>Main archive</p>
+        <h2>All 9 episode explanations</h2>
+      </header>
+      <div class="explained-split">
+        <article class="neon-panel explained-lead">
+          <a href={`/explained/${explainedLead.addressBar}`}>
+            <div class="explained-lead-img">
+              <img src={explainedLead.imageUrl} alt={explainedLead.imageAlt} width="400" height="225" loading="lazy" />
+            </div>
+            <div class="explained-lead-copy">
+              <span class="chip">Featured</span>
+              <h3>{explainedLead.listTitle}</h3>
+              <p>{explainedLead.quickAnswer.slice(0, 140)}…</p>
+            </div>
+          </a>
+        </article>
+        <div class="explained-rows neon-panel">
+          {explainedList.map((item, index) => (
+            <article class="explained-row">
+              <a href={`/explained/${item.addressBar}`}>
+                <span class="ep-num">EP {String(index + 1).padStart(2, "0")}</span>
+                <strong>{item.listTitle}</strong>
+                <small>{item.videoDuration || "Essay"}</small>
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section home-section--tight">
+    <div class="container">
+      <header class="block-head block-head--row">
+        <div>
+          <p>Official episode guides</p>
+          <h2>Runtime, embeds, cast & plot context</h2>
+          <p class="block-head-desc">Watch each episode inline, check release facts and runtime, and read plot summaries without theory spoilers mixed in.</p>
+        </div>
+        <a class="link-chip" href="/episodes">All episodes →</a>
+      </header>
+      <div class="episode-list">
+        {episodes.map((episode) => (
+          <article class="episode-card">
+            <a href={`/episodes/${episode.addressBar}`}>
+              <div class="episode-card-media">
+                <img src={episode.imageUrl} alt={episode.imageAlt} width="160" height="90" loading="lazy" />
+                <span class="episode-card-num">EP {String(episode.episodeNumber).padStart(2, "0")}</span>
+              </div>
+              <div class="episode-card-body">
+                <div class="episode-card-top">
+                  <h3>{episode.shortTitle}</h3>
+                  <span class="episode-card-runtime">{episode.runtime}</span>
+                </div>
+                <p class="episode-card-date">{episode.releaseLabel}</p>
+                <p class="episode-card-summary">{episode.summary}</p>
+              </div>
+              <span class="episode-card-arrow" aria-hidden="true">→</span>
+            </a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <div class="container">
+      <div class="dual-grid">
+        <div class="neon-panel char-block">
+          <header class="block-head">
+            <p>Character evidence</p>
+            <h2>Profiles & timelines</h2>
+          </header>
+          <div class="char-grid">
+            {coreCharacters.map((character) => (
+              <a href={`/characters/${character.addressBar}`}>
+                <img src={character.imageUrl} alt={character.imageAlt} width="44" height="44" loading="lazy" />
+                <span>{character.name}</span>
+              </a>
+            ))}
+          </div>
+          <a class="link-chip" href="/characters">All characters →</a>
+        </div>
+        <aside class="neon-panel game-block">
+          <p class="chip chip--blue">Fan game hub</p>
+          <h2>TADC Mind Games routes</h2>
+          <p class="compact-copy">Play the H5 fan game, then use ending notes, Caine pressure, and Pomni panic routes.</p>
+          <div class="stage-actions stage-actions--sm">
+            <a class="btn-sticker btn-sticker--blue" href="/play-game">Play Game!!</a>
+            <a class="btn-sticker btn-sticker--ghost" href="/play-game">Play Mind Games</a>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section home-section--tight">
+    <div class="container">
+      <header class="block-head block-head--row">
+        <div>
+          <p>Search guides</p>
+          <h2>Watch order, lore, parents & endings</h2>
+        </div>
+        <a class="link-chip" href="/guides">All guides →</a>
+      </header>
+      <div class="guide-grid">
+        {featuredGuides.map((guide) => (
+          <article class="neon-panel guide-card">
+            <a href={`/guides/${guide.addressBar}`}>
+              <span class="chip">{guide.category}</span>
+              <h3>{guide.title}</h3>
+              <p>{guide.searchIntent}</p>
+            </a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section home-section--last">
+    <div class="container">
+      <header class="block-head">
+        <p>About this site</p>
+        <h2>What you'll find here</h2>
+        <p class="block-head-desc block-head-desc--wide">
+          This is an unofficial English fan guide for GLITCH's <em>The Amazing Digital Circus</em>. Use <strong>Episodes</strong> when you want official video embeds, runtimes, and plot context; use <strong>Explained</strong> for scene-by-scene breakdowns, hidden details, and clearly marked theories; browse <strong>Characters</strong> for profile timelines and evidence; and open <strong>Guides</strong> for watch order, abstraction lore, endings, and the TADC Mind Games fan game.
+        </p>
+      </header>
+      <div class="faq-grid">
+        <article class="neon-panel faq-card">
+          <h3>New viewer?</h3>
+          <p>Start with the <a href="/episodes/pilot">Episode 1 guide</a> to watch the Pilot with context, or jump to <a href="/explained/episode-1-pilot-explained">Ep.1 Explained</a> for a full breakdown. Our <a href="/episodes">episode archive</a> maps the full season arc.</p>
+        </article>
+        <article class="neon-panel faq-card">
+          <h3>Just finished Remember?</h3>
+          <p>Read <a href="/explained/episode-9-remember-explained">Episode 9 Explained</a> for the finale breakdown, then the <a href="/guides/the-amazing-digital-circus-ending-explained">ending guide</a> for Martha, Pomni, and what the last scene implies.</p>
+        </article>
+        <article class="neon-panel faq-card">
+          <h3>Episodes vs Explained?</h3>
+          <p><strong>Episodes</strong> = official facts, embeds, cast appearances, and canon plot notes. <strong>Explained</strong> = fan analysis, visual clues, and theories — always labeled so you know what's confirmed vs speculative.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { pageSeo, siteEmail, siteName } from "../../seo/siteSeo.js";
+---
+
+<BaseLayout title={pageSeo.termsOfService.title} description={pageSeo.termsOfService.description} keywords={pageSeo.termsOfService.keywords}>
+  <div class="circus-page">
+    <section class="page-hero">
+      <div class="container">
+        <article class="legal-panel page-hero-panel">
+          <p class="page-hero-kicker">Legal information</p>
+          <h1>The Amazing Digital Circus — Terms of Service</h1>
+          <p class="page-hero-lede">Last updated: July 3, 2026</p>
+
+          <h2>Acceptance of Terms</h2>
+          <p>By using {siteName}, you agree to use the site in a lawful, respectful, and non-disruptive manner. These terms apply to all pages, guides, character profiles, embedded videos, game references, and external links available through the site.</p>
+
+          <h2>Editorial Purpose</h2>
+          <p>The site provides independent episode explanations, character analysis, guide content, and fan-game route notes for The Amazing Digital Circus. The content is written for informational and editorial use. It should not be treated as official communication from Glitch Productions, Gooseworx, Netflix, or any rights holder.</p>
+
+          <h2>Acceptable Use</h2>
+          <p>You may browse the site, link to public pages, and use the information for personal research or discussion. You may not attack the site, attempt unauthorized access, copy large portions of the site for republication, or use the content in a way that misrepresents its independent fan-guide status.</p>
+
+          <h2>External Links and Embeds</h2>
+          <p>The site may link to or embed third-party content, including YouTube videos and browser game frames. Those services are controlled by their own operators. We are not responsible for external availability, policy changes, comments, recommendations, or account requirements.</p>
+
+          <h2>Accuracy and Updates</h2>
+          <p>We aim to keep episode facts, character timelines, and theory labels accurate. The Amazing Digital Circus is an active media property, so future releases may change context. Corrections can be sent to <a href={`mailto:${siteEmail}`}>{siteEmail}</a>.</p>
+
+          <h2>Limitation of Liability</h2>
+          <p>The site is provided as an informational fan resource. We do not guarantee uninterrupted availability, complete accuracy, or compatibility with every browser and device.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { pageSeo, siteEmail, siteName } from "../../seo/siteSeo.js";
+---
+
+<BaseLayout title={pageSeo.privacyPolicy.title} description={pageSeo.privacyPolicy.description} keywords={pageSeo.privacyPolicy.keywords}>
+  <div class="circus-page">
+    <section class="page-hero">
+      <div class="container">
+        <article class="legal-panel page-hero-panel">
+          <p class="page-hero-kicker">Legal information</p>
+          <h1>The Amazing Digital Circus — Privacy Policy</h1>
+          <p class="page-hero-lede">Last updated: July 3, 2026</p>
+
+          <h2>Purpose of This Policy</h2>
+          <p>{siteName} is an independent editorial fan guide for The Amazing Digital Circus. This Privacy Policy explains how the site may handle basic technical information, embedded media, analytics signals, and direct email communication.</p>
+
+          <h2>Information We May Receive</h2>
+          <p>When you visit the site, standard server and browser information may be processed by hosting, analytics, security, or performance tools. This can include browser type, device type, approximate location derived from IP address, referring pages, visited URLs, and technical error information.</p>
+          <p>If you contact us by email, we may receive your email address, message content, and any information you choose to include. We use that information only to review your request, respond when appropriate, and improve the accuracy of the site.</p>
+
+          <h2>Cookies and Embedded Content</h2>
+          <p>The site may include embedded YouTube videos, game frames, image assets, and outbound links. External services can apply their own cookies, analytics, playback settings, or privacy rules. We recommend reviewing the privacy policies of those services when you interact with embedded media.</p>
+
+          <h2>How Information Is Used</h2>
+          <p>Technical information helps us understand site performance, fix errors, protect the site from abuse, and improve navigation. Contact information is used to respond to corrections, copyright questions, source updates, editorial feedback, or other direct requests.</p>
+
+          <h2>Data Sharing</h2>
+          <p>We do not sell personal information. Limited technical information may be processed by hosting, analytics, security, or embedded-media providers as part of normal site operation.</p>
+
+          <h2>Your Choices</h2>
+          <p>You can disable cookies in your browser, avoid embedded media, or contact us about privacy questions. For privacy-related requests, email <a href={`mailto:${siteEmail}`}>{siteEmail}</a>.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

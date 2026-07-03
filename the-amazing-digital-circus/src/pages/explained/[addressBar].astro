@@ -1,0 +1,668 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { analysisEssayBySlug, explainedVideos } from "../../data/explained.js";
+import { characters } from "../../data/characters.js";
+import { episodes } from "../../data/episodes.js";
+import {
+  absoluteUrl,
+  buildArticleSchema,
+  toIsoDate,
+} from "../../seo/jsonLd.js";
+
+export function getStaticPaths() {
+  return explainedVideos.map((item) => ({
+    params: { addressBar: item.addressBar },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props;
+const essayKey = item.addressBar as keyof typeof analysisEssayBySlug;
+const analysisEssay = analysisEssayBySlug[essayKey] || "";
+const sourceEpisode = episodes.find((episode) => episode.addressBar === item.episodeSlug);
+const characterConnections = characters.filter((character) =>
+  character.relatedExplained?.includes(item.addressBar)
+);
+const visibleCharacters = characterConnections.slice(0, 4);
+const searchIntent = item.searchIntent || item.questions;
+const detailH1 = `The Amazing Digital Circus - Episode ${item.id} Explained`;
+const pageUrl = absoluteUrl(`/explained/${item.addressBar}`);
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Explained", href: "/explained" },
+  { name: item.listTitle, href: `/explained/${item.addressBar}/` },
+];
+const jsonLd = buildArticleSchema({
+  pageUrl,
+  title: item.seo.title,
+  description: item.seo.description,
+  image: item.imageUrl,
+  datePublished: toIsoDate(item.videoPublishedLabel || item.publishDate),
+  dateModified: toIsoDate(item.publishDate),
+  section: "Explained",
+});
+---
+
+<BaseLayout
+  title={item.seo.title}
+  description={item.seo.description}
+  keywords={item.seo.keywords}
+  image={item.imageUrl}
+  imageAlt={item.imageAlt}
+  ogType="article"
+  breadcrumbs={breadcrumbs}
+  jsonLd={jsonLd}
+  article={{
+    datePublished: item.videoPublishedLabel || item.publishDate,
+    dateModified: item.publishDate,
+    section: "Explained",
+  }}
+>
+  <div class="circus-page">
+  <section class="page-hero page-hero--explained">
+    <div class="container">
+      <article class="explained-detail-hero">
+        <figure class="explained-detail-hero-media">
+          <img src={item.imageUrl} alt={item.imageAlt} width="720" height="405" loading="eager" />
+          <span>EP {String(item.id).padStart(2, "0")}</span>
+        </figure>
+        <div class="explained-detail-hero-body">
+          <p class="page-hero-kicker">Original video explanation</p>
+          <h1>{detailH1}</h1>
+          <p class="explained-detail-hero-deck">{item.listTitle}</p>
+          <div class="page-hero-meta">
+            <span><strong>Video</strong> {item.videoDuration || "Essay"}</span>
+            <span><strong>Updated</strong> {item.publishDate.replace("Updated ", "")}</span>
+            <span><strong>Focus</strong> Canon + Theory</span>
+          </div>
+          {sourceEpisode && (
+            <a class="explained-detail-hero-link" href={`/episodes/${sourceEpisode.addressBar}`}>
+              Official {sourceEpisode.shortTitle} guide →
+            </a>
+          )}
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="circus-section circus-section--last">
+    <div class="container">
+      <div class="detail-reader analysis-reader-content">
+        <div class="analysis-main-column">
+          <section class="analysis-panel neon-panel detail-panel video-panel" id="video">
+            <div class="block-head">
+              <p>Watch the explanation</p>
+              <h2>Video essay before the evidence board</h2>
+            </div>
+            {item.youtubeId ? (
+              <div class="analysis-video-frame">
+                <iframe
+                  src={`https://www.youtube.com/embed/${item.youtubeId}`}
+                  title={`${item.listTitle} explained video`}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen
+                ></iframe>
+              </div>
+            ) : (
+              <div class="pending-video">
+                <p>{item.videoStatus}</p>
+                <h2>Your YouTube explanation video will appear here.</h2>
+                <span>Canon evidence, editorial interpretation, and theory notes are ready while the video slot is prepared.</span>
+              </div>
+            )}
+          </section>
+
+            <section class="analysis-panel neon-panel detail-panel" id="quick-answer">
+            <div class="block-head">
+              <p>Quick Answer</p>
+              <h2>The main takeaway</h2>
+            </div>
+            <p class="analysis-lead">{item.quickAnswer}</p>
+            <div class="intent-strip">
+              {searchIntent.slice(0, 5).map((intent) => <span>{intent}</span>)}
+            </div>
+          </section>
+
+            <section class="analysis-panel neon-panel detail-panel" id="chapters">
+            <div class="block-head">
+              <p>Video Chapters</p>
+              <h2>How the commentary moves through the Pilot</h2>
+            </div>
+            <ol class="chapter-timeline">
+              {item.chapters.map((chapter) => {
+                const [time, ...labelParts] = chapter.split(" ");
+                return (
+                  <li>
+                    <span>{time}</span>
+                    <p>{labelParts.join(" ")}</p>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+
+            <section class="analysis-panel neon-panel detail-panel" id="essay">
+            <div class="block-head">
+              <p>Detailed Analysis</p>
+              <h2>What the video argues</h2>
+            </div>
+            <div class="essay-copy">
+              <Fragment set:html={analysisEssay} />
+            </div>
+          </section>
+
+          {item.hiddenDetails && (
+              <section class="analysis-panel neon-panel detail-panel" id="hidden-details">
+            <div class="block-head">
+              <p>Hidden Details</p>
+                <h2>Clues from the video, sorted by confidence</h2>
+              </div>
+              <div class="hidden-detail-grid">
+                {item.hiddenDetails.map((detail) => (
+                  <article>
+                    <span>{detail.type}</span>
+                    <h3>{detail.label}</h3>
+                    <p>{detail.copy}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+            <section class="analysis-panel neon-panel detail-panel" id="evidence">
+            <div class="block-head">
+              <p>Evidence Ledger</p>
+              <h2>Canon, interpretation, and theory stay separated</h2>
+            </div>
+            <div class="evidence-ledger">
+              <article class="canon-column">
+                <h3>Canon Evidence</h3>
+                <ul>{item.canonEvidence.map((fact) => <li>{fact}</li>)}</ul>
+              </article>
+              <article class="interpretation-column">
+                <h3>Our Interpretation</h3>
+                <p>{item.interpretation}</p>
+              </article>
+              <article class="theory-column">
+                <h3>Fan Theory</h3>
+                <ul>{item.fanTheories.map((theory) => <li>{theory}</li>)}</ul>
+              </article>
+            </div>
+          </section>
+
+            <section class="analysis-panel neon-panel detail-panel" id="questions">
+            <div class="block-head">
+              <p>Key Questions Answered</p>
+              <h2>Search intent this explanation covers</h2>
+            </div>
+            <div class="question-grid">
+              {item.questions.map((question) => <article>{question}</article>)}
+            </div>
+          </section>
+
+            <section class="analysis-panel neon-panel detail-panel" id="related">
+            <div class="block-head">
+              <p>Related Reading</p>
+              <h2>Use the guide for facts, then return to the theory layer</h2>
+            </div>
+            <div class="related-analysis-grid">
+              {sourceEpisode && (
+                <a href={`/episodes/${sourceEpisode.addressBar}`}>
+                  <span>Official companion</span>
+                  <strong>{sourceEpisode.shortTitle} episode guide with runtime, cast status, and canon sequence</strong>
+                </a>
+              )}
+              {visibleCharacters.map((character) => (
+                <a href={`/characters/${character.addressBar}`}>
+                  <span>Character evidence</span>
+                  <strong>{character.name} profile with confirmed facts and theory-labeled analysis</strong>
+                </a>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <aside class="analysis-sidebar" aria-label="Explained page navigation">
+          <nav>
+            <p>Analysis Map</p>
+            <a href="#video">Video</a>
+            <a href="#quick-answer">Quick Answer</a>
+            <a href="#chapters">Chapters</a>
+            <a href="#essay">Detailed Analysis</a>
+            {item.hiddenDetails && <a href="#hidden-details">Hidden Details</a>}
+            <a href="#evidence">Evidence Ledger</a>
+            <a href="#questions">Questions</a>
+          </nav>
+          <div class="sidebar-note">
+            <p>Page Role</p>
+            <span>Best after viewing: start with the canon facts, then follow the interpretation and theory layers.</span>
+          </div>
+          {sourceEpisode && (
+            <a class="sidebar-guide-link" href={`/episodes/${sourceEpisode.addressBar}`}>
+              Read the {sourceEpisode.shortTitle} official episode guide
+            </a>
+          )}
+        </aside>
+      </div>
+    </div>
+  </section>
+  </div>
+</BaseLayout>
+
+<style>
+.explained-analysis-hero-section {
+  padding:36px 0 24px
+}
+
+.explained-analysis-hero-content {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(340px,500px);
+  gap:24px;
+  align-items:stretch
+}
+
+.analysis-hero-copy,
+.analysis-hero-image,
+.analysis-panel,
+.analysis-sidebar nav,
+.sidebar-note,
+.sidebar-guide-link {
+  border:1px solid var(--color-line);
+  border-radius:var(--radius-xl);
+  background:linear-gradient(160deg, #fff5ea10 0%, #180711ec 100%);
+  box-shadow:var(--shadow-soft)
+}
+
+.analysis-hero-copy {
+  display:grid;
+  align-content:center;
+  padding:34px
+}
+
+.analysis-hero-copy>p {
+  color:var(--color-yellow);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  font-size:.72rem;
+  font-weight:900
+}
+
+.analysis-hero-copy h1 {
+  max-width:840px;
+  margin-top:10px;
+  font-size:clamp(2rem,4.6vw,4rem);
+  line-height:1
+}
+
+.analysis-hero-copy>span {
+  max-width:790px;
+  margin-top:16px;
+  color:var(--color-cream-soft);
+  font-size:1.04rem;
+  line-height:1.66
+}
+
+.analysis-hero-copy dl {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:26px
+}
+
+.analysis-hero-copy dl div {
+  border-top:1px solid var(--color-line);
+  padding-top:10px
+}
+
+.analysis-hero-copy dt {
+  color:var(--color-cream-muted);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  font-size:.66rem;
+  font-weight:900
+}
+
+.analysis-hero-copy dd {
+  margin-top:3px;
+  color:var(--color-cream);
+  font-weight:900
+}
+
+.analysis-hero-image {
+  overflow:hidden;
+  margin:0
+}
+
+.analysis-hero-image img {
+  width:100%;
+  height:100%;
+  min-height:310px;
+  object-fit:cover
+}
+
+.analysis-hero-image figcaption {
+  border-top:1px solid var(--color-line);
+  color:var(--color-cream-muted);
+  padding:12px 16px;
+  font-size:.86rem;
+  font-weight:800
+}
+
+.analysis-reader-section {
+  padding:10px 0 76px
+}
+
+.analysis-reader-content {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 292px;
+  gap:22px;
+  align-items:start
+}
+
+.analysis-main-column {
+  display:grid;
+  gap:18px
+}
+
+.analysis-panel {
+  padding:24px;
+  border-radius:var(--radius-lg)
+}
+
+.panel-heading {
+  max-width:780px;
+  margin-bottom:16px
+}
+
+.panel-heading h2 {
+  margin-top:6px;
+  font-size:clamp(1.34rem,2.2vw,2rem);
+  line-height:1.08
+}
+
+.analysis-video-frame {
+  position:relative;
+  overflow:hidden;
+  aspect-ratio:16/9;
+  border:1px solid var(--color-line);
+  border-radius:var(--radius-md);
+  background:#050205
+}
+
+.analysis-video-frame iframe {
+  width:100%;
+  height:100%;
+  border:0;
+  display:block
+}
+
+.pending-video {
+  border:1px dashed var(--color-line-strong);
+  border-radius:var(--radius-md);
+  padding:28px
+}
+
+.pending-video p,
+.pending-video span,
+.analysis-lead {
+  color:var(--color-cream-soft);
+  line-height:1.7
+}
+
+.intent-strip {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:16px
+}
+
+.intent-strip span {
+  color:var(--color-cream);
+  border:1px solid var(--color-line);
+  border-radius:999px;
+  background:#fff5ea08;
+  padding:6px 10px;
+  font-size:.82rem;
+  font-weight:800
+}
+
+.chapter-timeline {
+  display:grid;
+  gap:10px;
+  counter-reset:chapter
+}
+
+.chapter-timeline li {
+  display:grid;
+  grid-template-columns:74px 1fr;
+  gap:12px;
+  align-items:start;
+  border-top:1px solid var(--color-line);
+  padding-top:10px
+}
+
+.chapter-timeline span {
+  color:var(--color-yellow);
+  font-weight:900
+}
+
+.chapter-timeline p {
+  color:var(--color-cream-soft);
+  line-height:1.5
+}
+
+.essay-copy h3 {
+  color:var(--color-cream);
+  margin-top:1.65em;
+  margin-bottom:.45em;
+  font-size:clamp(1.25rem,1.9vw,1.7rem)
+}
+
+.essay-copy h3:first-child {
+  margin-top:0
+}
+
+.hidden-detail-grid,
+.question-grid,
+.related-analysis-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px
+}
+
+.hidden-detail-grid article,
+.question-grid article,
+.related-analysis-grid a {
+  border:1px solid var(--color-line);
+  border-radius:var(--radius-md);
+  background:#fff5ea08;
+  padding:15px
+}
+
+.hidden-detail-grid span,
+.related-analysis-grid span {
+  color:var(--color-yellow);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  font-size:.65rem;
+  font-weight:900
+}
+
+.hidden-detail-grid h3 {
+  margin-top:6px;
+  font-size:1.12rem
+}
+
+.hidden-detail-grid p,
+.evidence-ledger p,
+.evidence-ledger li,
+.question-grid article {
+  color:var(--color-cream-soft);
+  font-size:.95rem;
+  line-height:1.62
+}
+
+.evidence-ledger {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px
+}
+
+.evidence-ledger article {
+  border-top:3px solid var(--color-blue);
+  border-radius:var(--radius-md);
+  background:#fff5ea08;
+  padding:16px
+}
+
+.evidence-ledger .interpretation-column {
+  border-top-color:var(--color-yellow)
+}
+
+.evidence-ledger .theory-column {
+  border-top-color:var(--color-red)
+}
+
+.evidence-ledger h3 {
+  margin-bottom:10px;
+  font-size:1.08rem
+}
+
+.evidence-ledger li {
+  padding-left:1em;
+  position:relative
+}
+
+.evidence-ledger li+li {
+  margin-top:9px
+}
+
+.evidence-ledger li:before {
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--color-yellow);
+  position:absolute;
+  left:0;
+  top:.58em
+}
+
+.related-analysis-grid a {
+  display:grid;
+  gap:6px;
+  transition:border-color var(--transition-fast), transform var(--transition-fast)
+}
+
+.related-analysis-grid a:hover,
+.related-analysis-grid a:focus-visible {
+  outline:none;
+  border-color:var(--color-cyan);
+  transform:translateY(-2px)
+}
+
+.related-analysis-grid strong {
+  color:var(--color-cream);
+  font-size:.96rem;
+  line-height:1.36
+}
+
+.analysis-sidebar {
+  position:sticky;
+  top:96px;
+  display:grid;
+  gap:14px
+}
+
+.analysis-sidebar nav,
+.sidebar-note,
+.sidebar-guide-link {
+  padding:16px;
+  border-radius:var(--radius-lg)
+}
+
+.analysis-sidebar nav p,
+.sidebar-note p {
+  color:var(--color-yellow);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  font-size:.68rem;
+  font-weight:900;
+  margin-bottom:10px
+}
+
+.analysis-sidebar nav a {
+  display:block;
+  color:var(--color-cream-soft);
+  border-top:1px solid var(--color-line);
+  padding:9px 0;
+  font-size:.92rem;
+  font-weight:800;
+  transition:color var(--transition-fast)
+}
+
+.analysis-sidebar nav a:hover {
+  color:var(--color-cyan)
+}
+
+.sidebar-note span {
+  color:var(--color-cream-soft);
+  font-size:.93rem;
+  line-height:1.55
+}
+
+.sidebar-guide-link {
+  color:var(--color-ink);
+  background:linear-gradient(180deg, #ffe082, var(--color-yellow));
+  font-weight:900;
+  line-height:1.35;
+  transition:transform var(--transition-fast)
+}
+
+.sidebar-guide-link:hover,
+.sidebar-guide-link:focus-visible {
+  outline:none;
+  transform:translateY(-2px)
+}
+
+@media (width<=1024px) {
+  .explained-analysis-hero-content,
+  .analysis-reader-content {
+    grid-template-columns:1fr
+  }
+
+  .analysis-sidebar {
+    position:static;
+    order:-1
+  }
+
+  .analysis-sidebar nav {
+    display:none
+  }
+}
+
+@media (width<=768px) {
+  .analysis-hero-copy,
+  .analysis-panel {
+    padding:20px
+  }
+
+  .analysis-hero-copy dl,
+  .hidden-detail-grid,
+  .evidence-ledger,
+  .question-grid,
+  .related-analysis-grid {
+    grid-template-columns:1fr
+  }
+
+  .chapter-timeline li {
+    grid-template-columns:1fr;
+    gap:4px
+  }
+
+  .analysis-hero-image img {
+    min-height:220px
+  }
+}
+</style>

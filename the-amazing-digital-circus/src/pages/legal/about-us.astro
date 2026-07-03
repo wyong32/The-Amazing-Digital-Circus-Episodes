@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { pageSeo, siteName } from "../../seo/siteSeo.js";
+---
+
+<BaseLayout title={pageSeo.aboutUs.title} description={pageSeo.aboutUs.description} keywords={pageSeo.aboutUs.keywords}>
+  <div class="circus-page">
+    <section class="page-hero">
+      <div class="container">
+        <article class="legal-panel page-hero-panel">
+          <p class="page-hero-kicker">About the site</p>
+          <h1>The Amazing Digital Circus — About Us</h1>
+          <p class="page-hero-lede">Independent fan guide and analysis library for GLITCH's The Amazing Digital Circus.</p>
+
+          <h2>What This Site Covers</h2>
+          <p>{siteName} is built around The Amazing Digital Circus as a complete viewing companion. The site focuses on episode explanations, official episode context, character evidence, lore guides, parent-facing notes, and TADC Mind Games route information.</p>
+
+          <h2>Editorial Approach</h2>
+          <p>Our pages separate confirmed facts, editorial interpretation, and fan theory. That distinction matters because The Amazing Digital Circus mixes surreal comedy, digital horror, emotional character work, and system-level mystery. Readers should be able to tell when a point is directly supported by the show and when it is an analytical reading.</p>
+
+          <h2>Why Episodes and Explained Are Separate</h2>
+          <p>Episode pages focus on the original animation: release context, runtime, cast appearances, plot structure, and canon details. Explained pages focus on meaning: hidden clues, emotional arcs, character motives, symbolic patterns, and theory boundaries.</p>
+
+          <h2>Who the Site Is For</h2>
+          <p>The site is designed for new viewers, returning fans, theory readers, parents checking suitability, and players who discover the world through fan-game routes. The goal is to make the series easier to understand without flattening its ambiguity.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

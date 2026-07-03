@@ -1,0 +1,672 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { episodes, episodeDeepDive, episodeNarrativeHtml } from "../../data/episodes.js";
+import { absoluteUrl, buildWebPageSchema } from "../../seo/jsonLd.js";
+
+export function getStaticPaths() {
+  return episodes.map((episode) => ({
+    params: { addressBar: episode.addressBar },
+    props: { episode },
+  }));
+}
+
+const { episode } = Astro.props;
+const episodeKey = episode.addressBar as keyof typeof episodeDeepDive;
+const narrativeKey = episode.addressBar as keyof typeof episodeNarrativeHtml;
+const deepDive = episodeDeepDive[episodeKey];
+const narrativeHtml = episodeNarrativeHtml[narrativeKey] || "";
+const episodeIndex = episodes.findIndex((entry) => entry.addressBar === episode.addressBar);
+const previousEpisode = episodes[episodeIndex - 1];
+const nextEpisode = episodes[episodeIndex + 1];
+const primaryCharacters = episode.characters.slice(0, 5);
+const detailH1 = `The Amazing Digital Circus - Episode ${episode.episodeNumber} ${episode.shortTitle} Guide`;
+const pageUrl = absoluteUrl(`/episodes/${episode.addressBar}`);
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Episodes", href: "/episodes" },
+  {
+    name: `Episode ${episode.episodeNumber}: ${episode.shortTitle}`,
+    href: `/episodes/${episode.addressBar}/`,
+  },
+];
+const jsonLd = buildWebPageSchema({
+  pageUrl,
+  title: episode.seo.title,
+  description: episode.seo.description,
+  image: episode.imageUrl,
+});
+---
+
+<BaseLayout
+  title={episode.seo.title}
+  description={episode.seo.description}
+  keywords={episode.seo.keywords}
+  image={episode.imageUrl}
+  imageAlt={episode.imageAlt}
+  breadcrumbs={breadcrumbs}
+  jsonLd={jsonLd}
+>
+  <div class="circus-page">
+  <section class="page-hero page-hero--episode">
+    <div class="container">
+      <article class="episode-detail-hero">
+        <div class="episode-detail-hero-head">
+          <figure class="episode-detail-hero-media">
+            <img src={episode.imageUrl} alt={episode.imageAlt} width="1280" height="720" loading="eager" />
+            <span class="episode-detail-hero-ep">EP {String(episode.episodeNumber).padStart(2, "0")}</span>
+          </figure>
+          <div class="episode-detail-hero-intro">
+            <p class="page-hero-kicker">Episode {String(episode.episodeNumber).padStart(2, "0")} · Official companion</p>
+            <h1>{detailH1}</h1>
+            <dl class="episode-detail-hero-facts" aria-label="Episode quick facts">
+              <div>
+                <dt>Release</dt>
+                <dd>{episode.releaseLabel}</dd>
+              </div>
+              <div>
+                <dt>Runtime</dt>
+                <dd>{episode.runtime}</dd>
+              </div>
+              <div>
+                <dt>Views</dt>
+                <dd>{episode.viewsLabel}</dd>
+              </div>
+              <div>
+                <dt>Status</dt>
+                <dd>{episode.stability}</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+        <div class="episode-detail-hero-body">
+          <p class="episode-detail-hero-summary">{episode.heroSummary}</p>
+          <div class="episode-detail-hero-foot">
+            <p class="episode-detail-hero-credit">{episode.writerDirector}</p>
+            <a class="episode-detail-hero-link" href={`/explained/${episode.relatedExplainedSlug}`}>
+              Read explained companion →
+            </a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="circus-section circus-section--last">
+    <div class="container">
+      <div class="detail-reader episode-reader-content">
+        <div class="episode-main-column">
+          <section class="episode-panel neon-panel detail-panel" id="official-episode">
+            <div class="block-head">
+              <p>Official Episode</p>
+              <h2>Watch the original animation</h2>
+            </div>
+            <div class="video-frame">
+              <iframe
+                src={`https://www.youtube.com/embed/${episode.youtubeId}`}
+                title={`${episode.shortTitle} official episode by GLITCH`}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </section>
+
+          {deepDive && (
+          <section class="episode-panel neon-panel detail-panel" id="quick-context">
+              <div class="block-head">
+                <p>Quick Context</p>
+                <h2>What this episode is really about</h2>
+              </div>
+              <p class="lead-copy">{deepDive.quickAnswer}</p>
+              <p>{deepDive.viewingContext}</p>
+            </section>
+          )}
+
+          <section class="episode-panel neon-panel detail-panel" id="plot-overview">
+            <div class="block-head">
+              <p>Plot Overview</p>
+              <h2>{episode.shortTitle} in our own words</h2>
+            </div>
+            <article class="rich-copy">
+              <Fragment set:html={episode.detailsHtml} />
+            </article>
+          </section>
+
+          <section class="episode-panel neon-panel detail-panel" id="story-analysis">
+            <div class="block-head">
+              <p>Story and Character Analysis</p>
+              <h2>How the episode moves the Circus arc forward</h2>
+            </div>
+            <div class="episode-analysis-copy">
+              <Fragment set:html={narrativeHtml} />
+            </div>
+          </section>
+
+          <section class="episode-panel neon-panel detail-panel" id="characters">
+            <div class="block-head">
+              <p>Characters in This Episode</p>
+              <h2>Appearance notes and state changes</h2>
+            </div>
+            <div class="episode-character-grid">
+              {episode.characters.map((character) => (
+                <article>
+                  <img src={character.avatar} alt={`${character.name} avatar`} width="56" height="56" loading="lazy" />
+                  <div>
+                    <h3><a href={`/characters/${character.slug}`}>{character.name}</a></h3>
+                    <p>{character.status}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          {deepDive && (
+          <section class="episode-panel neon-panel detail-panel" id="canon-details">
+              <div class="block-head">
+                <p>Canon Details</p>
+                <h2>Confirmed evidence, fallout, and continuity notes</h2>
+              </div>
+              <div class="canon-detail-grid">
+                <article>
+                  <h3>Confirmed facts</h3>
+                  <ul>
+                    {deepDive.canonEvidence.map((fact: string) => <li>{fact}</li>)}
+                  </ul>
+                </article>
+                <article>
+                  <h3>Character fallout</h3>
+                  <ul>
+                    {deepDive.characterFallout.map((item: string) => <li>{item}</li>)}
+                  </ul>
+                </article>
+                <article>
+                  <h3>Continuity notes</h3>
+                  <ul>
+                    {deepDive.continuityNotes.map((item: string) => <li>{item}</li>)}
+                  </ul>
+                </article>
+              </div>
+            </section>
+          )}
+
+          <section class="episode-panel neon-panel detail-panel" id="key-moments">
+            <div class="block-head">
+              <p>Key Moments and Hidden Details</p>
+              <h2>Signals worth tracking on rewatch</h2>
+            </div>
+            <ol class="key-moment-list">
+              {episode.keyMoments.map((moment) => <li>{moment}</li>)}
+            </ol>
+          </section>
+
+          {deepDive && (
+          <section class="episode-panel neon-panel detail-panel" id="questions">
+              <div class="block-head">
+                <p>Audience Questions</p>
+                <h2>Search questions answered by this guide</h2>
+              </div>
+              <div class="episode-question-list">
+                {deepDive.questions.map((item: { question: string; answer: string }) => (
+                  <article>
+                    <h3>{item.question}</h3>
+                    <p>{item.answer}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <section class="episode-panel neon-panel detail-panel" id="related-reading">
+            <div class="block-head">
+              <p>Related Reading</p>
+              <h2>Keep the canon guide separate from deeper interpretation</h2>
+            </div>
+            <div class="related-reading-grid">
+              <a href={`/explained/${episode.relatedExplainedSlug}`}>
+                <span>Explained companion</span>
+                <strong>{episode.shortTitle} story analysis, symbolism, and theory-labeled interpretation</strong>
+              </a>
+              {previousEpisode && (
+                <a href={`/episodes/${previousEpisode.addressBar}`}>
+                  <span>Previous episode</span>
+                  <strong>{previousEpisode.shortTitle} official companion guide</strong>
+                </a>
+              )}
+              {nextEpisode && (
+                <a href={`/episodes/${nextEpisode.addressBar}`}>
+                  <span>Next episode</span>
+                  <strong>{nextEpisode.shortTitle} official companion guide</strong>
+                </a>
+              )}
+              {primaryCharacters.map((character) => (
+                <a href={`/characters/${character.slug}`}>
+                  <span>Character file</span>
+                  <strong>{character.name} appearance timeline and canon status after {episode.shortTitle}</strong>
+                </a>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <aside class="episode-sidebar" aria-label="Episode page navigation">
+          <nav>
+            <p>On this page</p>
+            <a href="#official-episode">Official episode</a>
+            <a href="#quick-context">Quick context</a>
+            <a href="#plot-overview">Plot overview</a>
+            <a href="#story-analysis">Story analysis</a>
+            <a href="#characters">Characters</a>
+            <a href="#canon-details">Canon details</a>
+            <a href="#related-reading">Related reading</a>
+          </nav>
+          <a class="sidebar-explained-link" href={`/explained/${episode.relatedExplainedSlug}`}>
+            Read the {episode.shortTitle} explained companion
+          </a>
+        </aside>
+      </div>
+    </div>
+  </section>
+  </div>
+</BaseLayout>
+
+<style>
+.episode-hero-section {
+  padding:36px 0 28px
+}
+
+.episode-hero-content {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(360px,520px);
+  gap:28px;
+  align-items:stretch
+}
+
+.episode-hero-copy,
+.episode-hero-poster {
+  border:1px solid var(--color-line);
+  border-radius:var(--radius-xl);
+  background:linear-gradient(158deg, #fff5ea12 0%, #170711d9 100%);
+  box-shadow:var(--shadow-soft)
+}
+
+.episode-hero-copy {
+  display:grid;
+  align-content:center;
+  padding:34px
+}
+
+.episode-hero-copy>p {
+  color:var(--color-cyan);
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  font-size:.72rem;
+  font-weight:900
+}
+
+.episode-hero-copy h1 {
+  max-width:860px;
+  margin-top:10px;
+  font-size:clamp(2rem,4.6vw,4rem);
+  line-height:1
+}
+
+.episode-hero-copy>span {
+  max-width:780px;
+  margin-top:16px;
+  color:var(--color-cream-soft);
+  font-size:1.04rem;
+  line-height:1.65
+}
+
+.episode-hero-facts {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-top:26px
+}
+
+.episode-hero-facts div {
+  border-top:1px solid var(--color-line);
+  padding-top:11px
+}
+
+.episode-hero-facts dt {
+  color:var(--color-cream-muted);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  font-size:.66rem;
+  font-weight:900
+}
+
+.episode-hero-facts dd {
+  color:var(--color-cream);
+  margin-top:4px;
+  font-weight:800
+}
+
+.episode-hero-poster {
+  overflow:hidden;
+  margin:0
+}
+
+.episode-hero-poster img {
+  width:100%;
+  height:100%;
+  min-height:320px;
+  object-fit:cover
+}
+
+.episode-hero-poster figcaption {
+  color:var(--color-cream-muted);
+  border-top:1px solid var(--color-line);
+  padding:12px 16px;
+  font-size:.86rem
+}
+
+.episode-reader-section {
+  padding:8px 0 76px
+}
+
+.episode-reader-content {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 300px;
+  gap:24px;
+  align-items:start
+}
+
+.episode-main-column {
+  display:grid;
+  gap:18px
+}
+
+.episode-panel,
+.episode-sidebar nav,
+.sidebar-explained-link {
+  border:1px solid var(--color-line);
+  border-radius:var(--radius-lg);
+  background:linear-gradient(165deg, #fff5ea0e 0%, #160710e8 100%);
+  box-shadow:var(--shadow-soft)
+}
+
+.episode-panel {
+  padding:24px
+}
+
+.panel-heading {
+  max-width:760px;
+  margin-bottom:16px
+}
+
+.panel-heading h2 {
+  margin-top:6px;
+  font-size:clamp(1.35rem,2.15vw,2rem);
+  line-height:1.08
+}
+
+.lead-copy,
+.episode-panel>p {
+  color:var(--color-cream-soft);
+  font-size:1rem;
+  line-height:1.72
+}
+
+.episode-panel>p+p {
+  margin-top:12px
+}
+
+.video-frame {
+  position:relative;
+  overflow:hidden;
+  border:1px solid var(--color-line);
+  border-radius:var(--radius-md);
+  aspect-ratio:16/9;
+  background:#050205
+}
+
+.video-frame iframe {
+  width:100%;
+  height:100%;
+  border:0;
+  display:block
+}
+
+.episode-analysis-copy h3 {
+  color:var(--color-cream);
+  margin-bottom:8px;
+  font-size:1.28rem
+}
+
+.episode-character-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px
+}
+
+.episode-character-grid article {
+  display:grid;
+  grid-template-columns:56px 1fr;
+  gap:12px;
+  align-items:start;
+  border:1px solid var(--color-line);
+  border-radius:var(--radius-md);
+  background:#fff5ea08;
+  padding:13px
+}
+
+.episode-character-grid img {
+  width:56px;
+  height:56px;
+  object-fit:cover;
+  border-radius:14px;
+  border:1px solid var(--color-line)
+}
+
+.episode-character-grid h3 {
+  font-size:1.08rem
+}
+
+.episode-character-grid a {
+  color:var(--color-cyan);
+  text-decoration:underline #6ee9f759;
+  text-underline-offset:3px
+}
+
+.episode-character-grid p,
+.canon-detail-grid li,
+.key-moment-list li,
+.episode-question-list p {
+  color:var(--color-cream-soft);
+  font-size:.95rem;
+  line-height:1.62
+}
+
+.canon-detail-grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px
+}
+
+.canon-detail-grid article {
+  border-top:3px solid var(--color-blue);
+  border-radius:var(--radius-md);
+  background:#fff5ea08;
+  padding:16px
+}
+
+.canon-detail-grid article:nth-child(2) {
+  border-top-color:var(--color-yellow)
+}
+
+.canon-detail-grid article:nth-child(3) {
+  border-top-color:var(--color-red)
+}
+
+.canon-detail-grid h3,
+.episode-question-list h3 {
+  font-size:1.08rem;
+  margin-bottom:10px
+}
+
+.canon-detail-grid li,
+.key-moment-list li {
+  padding-left:1.05em;
+  position:relative
+}
+
+.canon-detail-grid li+li,
+.key-moment-list li+li {
+  margin-top:10px
+}
+
+.canon-detail-grid li:before,
+.key-moment-list li:before {
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--color-yellow);
+  position:absolute;
+  left:0;
+  top:.58em
+}
+
+.key-moment-list {
+  display:grid;
+  gap:10px
+}
+
+.episode-question-list {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px
+}
+
+.episode-question-list article {
+  border:1px solid var(--color-line);
+  border-radius:var(--radius-md);
+  background:#fff5ea08;
+  padding:16px
+}
+
+.related-reading-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px
+}
+
+.related-reading-grid a {
+  display:grid;
+  gap:6px;
+  border:1px solid var(--color-line);
+  border-radius:var(--radius-md);
+  background:#fff5ea08;
+  padding:15px;
+  transition:border-color var(--transition-fast), transform var(--transition-fast)
+}
+
+.related-reading-grid a:hover,
+.related-reading-grid a:focus-visible {
+  outline:none;
+  border-color:var(--color-cyan);
+  transform:translateY(-2px)
+}
+
+.related-reading-grid span {
+  color:var(--color-yellow);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  font-size:.66rem;
+  font-weight:900
+}
+
+.related-reading-grid strong {
+  color:var(--color-cream);
+  font-size:.96rem;
+  line-height:1.35
+}
+
+.episode-sidebar {
+  position:sticky;
+  top:96px;
+  display:grid;
+  gap:14px
+}
+
+.episode-sidebar nav,
+.sidebar-explained-link {
+  padding:16px
+}
+
+.episode-sidebar nav p {
+  color:var(--color-yellow);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  font-size:.68rem;
+  font-weight:900;
+  margin-bottom:10px
+}
+
+.episode-sidebar nav a {
+  display:block;
+  color:var(--color-cream-soft);
+  border-top:1px solid var(--color-line);
+  padding:9px 0;
+  font-size:.92rem;
+  font-weight:800;
+  transition:color var(--transition-fast)
+}
+
+.episode-sidebar nav a:hover {
+  color:var(--color-cyan)
+}
+
+.sidebar-explained-link {
+  color:var(--color-ink);
+  background:linear-gradient(180deg, #ffe082, var(--color-yellow));
+  font-weight:900;
+  line-height:1.35;
+  transition:transform var(--transition-fast), filter var(--transition-fast)
+}
+
+.sidebar-explained-link:hover,
+.sidebar-explained-link:focus-visible {
+  outline:none;
+  transform:translateY(-2px);
+  filter:saturate(1.1)
+}
+
+@media (width<=1024px) {
+  .episode-hero-content,
+  .episode-reader-content {
+    grid-template-columns:1fr
+  }
+
+  .episode-sidebar {
+    position:static;
+    order:-1
+  }
+
+  .episode-sidebar nav {
+    display:none
+  }
+}
+
+@media (width<=768px) {
+  .episode-hero-copy,
+  .episode-panel {
+    padding:20px
+  }
+
+  .episode-hero-facts,
+  .episode-character-grid,
+  .canon-detail-grid,
+  .episode-question-list,
+  .related-reading-grid {
+    grid-template-columns:1fr
+  }
+
+  .episode-hero-poster img {
+    min-height:220px
+  }
+}
+</style>

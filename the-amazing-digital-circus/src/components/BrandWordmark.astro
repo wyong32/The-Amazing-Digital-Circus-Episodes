@@ -1,0 +1,13 @@
+---
+import { brandTitle } from "../seo/siteSeo.js";
+
+interface Props {
+  variant?: "header" | "footer";
+}
+
+const { variant = "header" } = Astro.props;
+---
+
+<span class:list={["brand-wordmark", variant === "footer" && "brand-wordmark--footer"]}>
+  {brandTitle}
+</span>

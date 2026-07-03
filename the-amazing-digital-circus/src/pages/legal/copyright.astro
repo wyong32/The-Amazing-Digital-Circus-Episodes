@@ -1,0 +1,33 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { pageSeo, siteEmail, siteName } from "../../seo/siteSeo.js";
+---
+
+<BaseLayout title={pageSeo.copyright.title} description={pageSeo.copyright.description} keywords={pageSeo.copyright.keywords}>
+  <div class="circus-page">
+    <section class="page-hero">
+      <div class="container">
+        <article class="legal-panel page-hero-panel">
+          <p class="page-hero-kicker">Legal information</p>
+          <h1>The Amazing Digital Circus — Copyright Policy</h1>
+          <p class="page-hero-lede">Last updated: July 3, 2026</p>
+
+          <h2>Independent Fan Resource</h2>
+          <p>{siteName} is an unofficial fan guide. The site is not affiliated with Glitch Productions, Gooseworx, Netflix, or The Amazing Digital Circus rights holders. Names, characters, episode references, and related marks belong to their respective owners.</p>
+
+          <h2>Editorial Use</h2>
+          <p>The site uses titles, character names, episode references, and embedded official media for commentary, criticism, education, and navigation. We write original explanations, guide text, character notes, and theory labels instead of reproducing official descriptions.</p>
+
+          <h2>Images and Media</h2>
+          <p>Some images are local editorial assets, placeholders, or screenshots used to identify the subject of a page. Embedded videos remain hosted by their original platforms. If a page uses an image that should be credited, replaced, or removed, contact us with the exact URL and ownership details.</p>
+
+          <h2>Takedown and Correction Requests</h2>
+          <p>Copyright questions can be sent to <a href={`mailto:${siteEmail}`}>{siteEmail}</a>. Please include the page URL, the material at issue, proof of rights ownership or authorization, and the action you request.</p>
+
+          <h2>Site Copyright</h2>
+          <p>Original page structure, written analysis, guide text, layout decisions, and site-specific organization are protected as site content unless otherwise noted. You may link to public pages, but you may not republish substantial portions as your own work.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

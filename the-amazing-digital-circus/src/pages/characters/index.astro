@@ -1,0 +1,69 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { characters } from "../../data/characters.js";
+import { pageSeo } from "../../seo/siteSeo.js";
+
+const seo = pageSeo.characters;
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Characters", href: "/characters" },
+];
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image="/images/characters/pomni.png"
+  imageAlt="Pomni from The Amazing Digital Circus character guide"
+  breadcrumbs={breadcrumbs}
+>
+  <div class="circus-page">
+    <section class="page-hero">
+      <div class="container">
+        <div class="page-hero-panel">
+          <p class="page-hero-kicker">Character database</p>
+          <h1>The Amazing Digital Circus Characters — Profiles & Timelines</h1>
+          <p class="page-hero-lede">
+            Profiles built from confirmed canon, editorial analysis, and clearly marked fan theory — so you always know what the show confirms vs what readers infer.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="inner-section">
+      <div class="container">
+        <header class="inner-section-header">
+          <p>Cast profiles</p>
+          <h2>Evidence, stability, and first appearances</h2>
+        </header>
+        <div class="character-roster-grid">
+          {characters.map((character) => (
+            <article class="character-roster-card neon-panel">
+              <a href={`/characters/${character.addressBar}`}>
+                <figure class="character-roster-portrait">
+                  <img src={character.imageUrl} alt={character.imageAlt} width="320" height="320" loading="lazy" />
+                </figure>
+                <div class="character-roster-copy">
+                  <p>{character.stats.avatarType}</p>
+                  <h2>{character.name}</h2>
+                  <ul class="character-roster-meta">
+                    <li>
+                      <span>First seen</span>
+                      <strong>{character.stats.firstAppearance}</strong>
+                    </li>
+                    <li>
+                      <span>Stability</span>
+                      <strong>{character.stats.circusStability}</strong>
+                    </li>
+                  </ul>
+                  <span class="character-roster-blurb">{character.editorialAnalysis}</span>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

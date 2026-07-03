@@ -1,0 +1,70 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { guides } from "../../data/guides.js";
+import { pageSeo } from "../../seo/siteSeo.js";
+
+const guideCards = guides.map((guide) => ({
+  ...guide,
+  excerpt: guide.detailsHtml.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 260),
+}));
+
+const seo = pageSeo.guides;
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Guides", href: "/guides" },
+];
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image="/images/guides/tadc-ending-explained.jpg"
+  imageAlt="The Amazing Digital Circus ending explained guide cover"
+  breadcrumbs={breadcrumbs}
+>
+  <div class="circus-page">
+    <section class="page-hero">
+      <div class="container">
+        <div class="page-hero-panel">
+          <p class="page-hero-kicker">Guide library</p>
+          <h1>The Amazing Digital Circus Guides — Lore & Watch Order</h1>
+          <p class="page-hero-lede">
+            Long-form guides for endings, watch order, abstraction lore, parent notes, character arcs, and where canon evidence stops before theory begins.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="inner-section">
+      <div class="container">
+        <div class="guide-archive-grid">
+          {guideCards.map((guide, index) => (
+            <article class:list={["guide-feature-card", index === 0 && "is-primary"]}>
+              <a href={`/guides/${guide.addressBar}`}>
+                <div class="guide-feature-media">
+                  <img src={guide.imageUrl} alt={guide.imageAlt} width="760" height="428" loading={index === 0 ? "eager" : "lazy"} />
+                </div>
+                <div class="guide-feature-copy">
+                  <p>{String(index + 1).padStart(2, "0")} · {guide.category} · Updated {guide.publishDate}</p>
+                  <h2>{guide.title}</h2>
+                  <span>{guide.excerpt}…</span>
+                  <dl>
+                    <div>
+                      <dt>Search intent</dt>
+                      <dd>{guide.searchIntent}</dd>
+                    </div>
+                    <div>
+                      <dt>Best for</dt>
+                      <dd>{guide.bestFor}</dd>
+                    </div>
+                  </dl>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

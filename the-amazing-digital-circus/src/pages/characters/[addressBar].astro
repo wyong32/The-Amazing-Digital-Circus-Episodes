@@ -1,0 +1,195 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { characters, profileDetailHtml, profileReadingHtml } from "../../data/characters.js";
+import { episodes } from "../../data/episodes.js";
+import { absoluteUrl, buildWebPageSchema } from "../../seo/jsonLd.js";
+
+export function getStaticPaths() {
+  return characters.map((character) => ({
+    params: { addressBar: character.addressBar },
+    props: { character },
+  }));
+}
+
+const { character } = Astro.props;
+const profileKey = character.addressBar as keyof typeof profileReadingHtml;
+const detailKey = character.addressBar as keyof typeof profileDetailHtml;
+const readingHtml = profileReadingHtml[profileKey] || "";
+const detailHtml = profileDetailHtml[detailKey] || "";
+const detailH1 = `The Amazing Digital Circus - ${character.name} Character Profile`;
+
+// 将时间线和关系中的关卡、角色名转为自然内链，保持正文可读性。
+const escapeHtml = (value: string) =>
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const episodeLinks = episodes.map((episode) => ({
+  label: `Episode ${episode.episodeNumber}`,
+  href: `/episodes/${episode.addressBar}/`,
+}));
+
+const characterLinks = characters
+  .filter((item) => item.addressBar !== character.addressBar)
+  .map((item) => ({
+    label: item.name,
+    href: `/characters/${item.addressBar}/`,
+  }))
+  .sort((a, b) => b.label.length - a.label.length);
+
+const linkKnownTerms = (value: string) => {
+  let html = escapeHtml(value);
+
+  [...episodeLinks, ...characterLinks].forEach((link) => {
+    const pattern = new RegExp(`\\b${escapeRegExp(link.label)}\\b`, "g");
+    html = html.replace(pattern, `<a href="${link.href}">${link.label}</a>`);
+  });
+
+  return html;
+};
+
+const pageUrl = absoluteUrl(`/characters/${character.addressBar}`);
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Characters", href: "/characters" },
+  { name: character.name, href: `/characters/${character.addressBar}/` },
+];
+const primaryExplainedSlug = character.relatedExplained?.[0];
+const jsonLd = buildWebPageSchema({
+  pageUrl,
+  title: character.seo.title,
+  description: character.seo.description,
+  image: character.imageUrl,
+});
+---
+
+<BaseLayout
+  title={character.seo.title}
+  description={character.seo.description}
+  keywords={character.seo.keywords}
+  image={character.imageUrl}
+  imageAlt={character.imageAlt}
+  breadcrumbs={breadcrumbs}
+  jsonLd={jsonLd}
+>
+  <div class="circus-page">
+      <section class="page-hero page-hero--character">
+        <div class="container">
+          <article class="character-detail-hero">
+            <div class="character-detail-hero-dossier">
+              <figure class="character-detail-hero-visual">
+                <img src={character.imageUrl} alt={character.imageAlt} width="520" height="520" loading="eager" />
+                <span class="character-detail-hero-badge">{character.name}</span>
+              </figure>
+              <div class="character-detail-hero-panel">
+                <p class="page-hero-kicker">{character.stats.avatarType}</p>
+                <h1>{detailH1}</h1>
+                <p class="character-detail-hero-deck">{character.editorialAnalysis}</p>
+                <dl class="character-detail-hero-facts" aria-label="Character quick stats">
+                  <div>
+                    <dt>First appearance</dt>
+                    <dd>{character.stats.firstAppearance}</dd>
+                  </div>
+                  <div>
+                    <dt>Voice actor</dt>
+                    <dd>{character.stats.voiceActor}</dd>
+                  </div>
+                  <div>
+                    <dt>Current status</dt>
+                    <dd>{character.stats.currentStatus}</dd>
+                  </div>
+                  <div>
+                    <dt>Stability</dt>
+                    <dd>{character.stats.circusStability}</dd>
+                  </div>
+                </dl>
+                {primaryExplainedSlug && (
+                  <a class="character-detail-hero-link" href={`/explained/${primaryExplainedSlug}`}>
+                    Read related explained essay →
+                  </a>
+                )}
+              </div>
+            </div>
+            {readingHtml && (
+              <div class="character-detail-hero-reading profile-reading-copy">
+                <Fragment set:html={readingHtml} />
+              </div>
+            )}
+          </article>
+        </div>
+      </section>
+
+      <section class="circus-section">
+        <div class="container">
+          <div class="ticket-strip" aria-label="Character stats">
+            {Object.entries(character.stats).map(([key, value]) => (
+              <div class="ticket-stub">
+                <span>{key.replace(/([A-Z])/g, " $1")}</span>
+                <strong>{value}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="circus-section">
+        <div class="container">
+          <div class="faq-grid">
+            <article class="neon-panel faq-card canon-card">
+              <h3>Canonical facts</h3>
+              <p>Confirmed in the show</p>
+              <ul>{character.canonicalFacts.map((fact) => <li>{fact}</li>)}</ul>
+            </article>
+            <article class="neon-panel faq-card editorial-card">
+              <h3>Editorial analysis</h3>
+              <p>Our reading</p>
+              <p>{character.editorialAnalysis}</p>
+            </article>
+            <article class="neon-panel faq-card theory-card">
+              <h3>Fan theory</h3>
+              <p>Speculation, clearly marked</p>
+              <p>{character.fanTheory}</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="circus-section">
+        <div class="container">
+          <article class="neon-panel detail-panel">
+            <header class="block-head">
+              <p>Character reading notes</p>
+              <h2>Why {character.name} matters to the story</h2>
+            </header>
+            <div class="character-reading-copy">
+              <Fragment set:html={detailHtml} />
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="circus-section">
+        <div class="container">
+          <article class="neon-panel detail-panel">
+            <header class="block-head">
+              <p>Episode appearance timeline</p>
+              <h2>{character.name}'s story beats</h2>
+            </header>
+            <ol>{character.timeline.map((event) => <li><Fragment set:html={linkKnownTerms(event)} /></li>)}</ol>
+          </article>
+        </div>
+      </section>
+
+      <section class="circus-section circus-section--last">
+        <div class="container">
+          <article class="neon-panel detail-panel">
+            <header class="block-head">
+              <p>Relationships</p>
+              <h2>How this profile connects to the cast</h2>
+            </header>
+            <ul>{character.relationships.map((relationship) => <li><Fragment set:html={linkKnownTerms(relationship)} /></li>)}</ul>
+          </article>
+        </div>
+      </section>
+  </div>
+</BaseLayout>

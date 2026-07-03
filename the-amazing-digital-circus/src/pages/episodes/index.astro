@@ -1,0 +1,74 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { episodes } from "../../data/episodes.js";
+import { pageSeo } from "../../seo/siteSeo.js";
+
+const seo = pageSeo.episodes;
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Episodes", href: "/episodes" },
+];
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image="/images/episodes/episode-09.jpg"
+  imageAlt="The Amazing Digital Circus Episode 9 Remember official thumbnail"
+  breadcrumbs={breadcrumbs}
+>
+  <div class="circus-page">
+    <section class="page-hero">
+      <div class="container">
+        <div class="page-hero-panel">
+          <p class="page-hero-kicker">Official Episode Archive</p>
+          <h1>The Amazing Digital Circus Episodes — Complete Watch Guide</h1>
+          <p class="page-hero-lede">
+            Canon-first route through all 9 episodes: official YouTube embeds, release dates, runtime, cast appearances, and plot context — kept separate from theory-heavy Explained pages.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="inner-section">
+      <div class="container">
+        <header class="inner-section-header">
+          <p>Season guide</p>
+          <h2>Watch order, story role, and cast changes</h2>
+        </header>
+        <div class="episode-archive-grid">
+          {episodes.map((episode) => (
+            <article class="episode-archive-card">
+              <a href={`/episodes/${episode.addressBar}`} aria-label={`Read ${episode.shortTitle} episode guide`}>
+                <div class="archive-card-media">
+                  <img src={episode.imageUrl} alt={episode.imageAlt} width="520" height="293" loading="lazy" />
+                  <span>EP {String(episode.episodeNumber).padStart(2, "0")}</span>
+                </div>
+                <div class="archive-card-copy">
+                  <p>{episode.releaseLabel}</p>
+                  <h2>{episode.shortTitle}</h2>
+                  <span>{episode.summary}</span>
+                  <dl class="archive-card-meta">
+                    <div>
+                      <dt>Runtime</dt>
+                      <dd>{episode.runtime}</dd>
+                    </div>
+                    <div>
+                      <dt>Views</dt>
+                      <dd>{episode.viewsLabel}</dd>
+                    </div>
+                    <div>
+                      <dt>Status</dt>
+                      <dd>{episode.stability}</dd>
+                    </div>
+                  </dl>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

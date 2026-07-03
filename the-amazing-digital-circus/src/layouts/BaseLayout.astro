@@ -1,0 +1,144 @@
+---
+import "../styles/global.css";
+import "../styles/circus-ui.css";
+import "../styles/inner-pages.css";
+import AppHeader from "../components/AppHeader.astro";
+import AppFooter from "../components/AppFooter.astro";
+import { siteName, socialImage } from "../seo/siteSeo.js";
+import { absoluteUrl, toIsoDate } from "../seo/jsonLd.js";
+
+interface BreadcrumbItem {
+  name: string;
+  href: string;
+}
+
+interface ArticleMeta {
+  datePublished?: string;
+  dateModified?: string;
+  section?: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  keywords?: string;
+  image?: string;
+  imageAlt?: string;
+  ogType?: "website" | "article";
+  breadcrumbs?: BreadcrumbItem[];
+  article?: ArticleMeta;
+  jsonLd?: Record<string, unknown>;
+}
+
+const {
+  title,
+  description,
+  keywords,
+  image = socialImage,
+  imageAlt = `${siteName} cover image`,
+  ogType = "website",
+  breadcrumbs,
+  article,
+  jsonLd,
+} = Astro.props;
+
+const canonicalUrl = absoluteUrl(Astro.url.pathname);
+const socialImageUrl = absoluteUrl(image);
+const datePublished = toIsoDate(article?.datePublished);
+const dateModified = toIsoDate(article?.dateModified) || datePublished;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    {keywords && <meta name="keywords" content={keywords} />}
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image:alt" content={imageAlt} />
+    {ogType === "article" && datePublished && <meta property="article:published_time" content={datePublished} />}
+    {ogType === "article" && dateModified && <meta property="article:modified_time" content={dateModified} />}
+    {ogType === "article" && article?.section && <meta property="article:section" content={article.section} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageUrl} />
+    <meta name="twitter:image:alt" content={imageAlt} />
+    {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <title>{title}</title>
+  </head>
+  <body>
+    <AppHeader />
+    {breadcrumbs && breadcrumbs.length > 1 && (
+      <nav class="breadcrumb-bar" aria-label="Breadcrumb">
+        <div class="container">
+          <ol class="breadcrumb-list">
+            {breadcrumbs.map((item, index) => (
+              <li>
+                {index < breadcrumbs.length - 1 ? (
+                  <a href={item.href}>{item.name}</a>
+                ) : (
+                  <span aria-current="page">{item.name}</span>
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+      </nav>
+    )}
+    <main>
+      <slot />
+    </main>
+    <AppFooter />
+  </body>
+</html>
+
+<style>
+  .breadcrumb-bar {
+    padding: 10px 0 0;
+  }
+
+  .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: var(--color-cream-muted);
+    font-size: 0.92rem;
+  }
+
+  .breadcrumb-list li {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .breadcrumb-list li:not(:last-child)::after {
+    content: "/";
+    color: var(--color-line-strong);
+  }
+
+  .breadcrumb-list a {
+    color: var(--color-cyan);
+    text-decoration: none;
+  }
+
+  .breadcrumb-list a:hover {
+    color: var(--color-yellow);
+  }
+
+  .breadcrumb-list span {
+    color: var(--color-cream-soft);
+  }
+</style>

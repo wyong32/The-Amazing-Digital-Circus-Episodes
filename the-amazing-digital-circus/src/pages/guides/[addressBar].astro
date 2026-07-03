@@ -1,0 +1,100 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { guides } from "../../data/guides.js";
+import { episodes } from "../../data/episodes.js";
+import { explainedVideos } from "../../data/explained.js";
+import { absoluteUrl, buildArticleSchema, toIsoDate } from "../../seo/jsonLd.js";
+
+export function getStaticPaths() {
+  return guides.map((guide) => ({
+    params: { addressBar: guide.addressBar },
+    props: { guide },
+  }));
+}
+
+const { guide } = Astro.props;
+const detailH1 = guide.title.startsWith("The Amazing Digital Circus")
+  ? guide.title
+  : `The Amazing Digital Circus - ${guide.title}`;
+const pageUrl = absoluteUrl(`/guides/${guide.addressBar}`);
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Guides", href: "/guides" },
+  { name: guide.seo.title, href: `/guides/${guide.addressBar}/` },
+];
+const jsonLd = buildArticleSchema({
+  pageUrl,
+  title: guide.seo.title,
+  description: guide.seo.description,
+  image: guide.imageUrl,
+  datePublished: toIsoDate(guide.publishDate),
+  dateModified: toIsoDate(guide.publishDate),
+  section: guide.category,
+});
+---
+
+<BaseLayout
+  title={guide.seo.title}
+  description={guide.seo.description}
+  keywords={guide.seo.keywords}
+  image={guide.imageUrl}
+  imageAlt={guide.imageAlt}
+  ogType="article"
+  breadcrumbs={breadcrumbs}
+  jsonLd={jsonLd}
+  article={{
+    datePublished: guide.publishDate,
+    dateModified: guide.publishDate,
+    section: guide.category,
+  }}
+>
+  <div class="circus-page">
+    <section class="page-hero">
+      <div class="container">
+        <div class="page-hero-split">
+          <div class="page-hero-panel">
+            <p class="page-hero-kicker">{guide.category} · {guide.publishDate}</p>
+            <h1>{detailH1}</h1>
+            <p class="page-hero-lede">{guide.searchIntent}</p>
+          </div>
+          <figure class="page-hero-media">
+            <img src={guide.imageUrl} alt={guide.imageAlt} width="540" height="304" loading="eager" />
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="circus-section circus-section--last">
+      <div class="container">
+        <div class="detail-reader">
+          <article class="neon-panel detail-panel guide-rich-copy">
+            <Fragment set:html={guide.detailsHtml} />
+          </article>
+          <aside class="neon-panel detail-panel detail-aside">
+            <header class="block-head">
+              <p>Related reading</p>
+              <h2>Continue through the guide cluster</h2>
+            </header>
+            <a class="link-chip" href={`/episodes/${episodes[0].addressBar}`}>Pilot official episode guide →</a>
+            <a class="link-chip" href={`/explained/${explainedVideos[0].addressBar}`}>Episode 1 explained →</a>
+            <a class="link-chip" href="/play-game">TADC Mind Games hub →</a>
+            <a class="link-chip" href="/guides">All guides →</a>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+.guide-rich-copy {
+  padding: 18px 20px;
+}
+
+.detail-aside {
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px;
+  align-content: start;
+}
+</style>

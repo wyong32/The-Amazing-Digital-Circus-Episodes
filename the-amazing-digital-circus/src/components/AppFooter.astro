@@ -1,0 +1,41 @@
+---
+import BrandWordmark from "./BrandWordmark.astro";
+import { brandLogo, legalNavigation, mainNavigation, siteName } from "../seo/siteSeo.js";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="app-footer">
+  <div class="container">
+    <div class="footer-shell">
+      <div class="footer-brand">
+        <img
+          class="brand-mark"
+          src={brandLogo}
+          alt=""
+          width="42"
+          height="42"
+        />
+        <div>
+          <BrandWordmark variant="footer" />
+          <p>Unofficial English fan guide for GLITCH's <em>The Amazing Digital Circus</em>. Browse official episode pages with embeds and plot context, read scene-by-scene Explained essays, character evidence profiles, lore guides, and TADC Mind Games walkthroughs — canon facts and fan theories always labeled separately.</p>
+        </div>
+      </div>
+
+      <div class="footer-nav">
+        <nav aria-label="Footer navigation">
+          <strong>Navigate</strong>
+          {mainNavigation.map((item) => <a href={item.href}>{item.label}</a>)}
+        </nav>
+        <nav aria-label="Legal navigation">
+          <strong>Legal</strong>
+          {legalNavigation.map((item) => <a href={item.href}>{item.label}</a>)}
+        </nav>
+      </div>
+
+      <p class="footer-legal">
+        Copyright © {year} {siteName}. All rights reserved.
+      </p>
+    </div>
+  </div>
+</footer>

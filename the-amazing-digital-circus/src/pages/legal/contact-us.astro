@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { pageSeo, siteEmail, siteName } from "../../seo/siteSeo.js";
+---
+
+<BaseLayout title={pageSeo.contactUs.title} description={pageSeo.contactUs.description} keywords={pageSeo.contactUs.keywords}>
+  <div class="circus-page">
+    <section class="page-hero">
+      <div class="container">
+        <article class="legal-panel page-hero-panel">
+          <p class="page-hero-kicker">Contact</p>
+          <h1>The Amazing Digital Circus — Contact Us</h1>
+          <p class="page-hero-lede">Editorial corrections, rights questions, and site feedback</p>
+
+          <h2>Email</h2>
+          <p>You can contact {siteName} at <a href={`mailto:${siteEmail}`}>{siteEmail}</a>. We do not use a public form on this page, so email is the correct channel for direct requests.</p>
+
+          <h2>Correction Requests</h2>
+          <p>If you find an error in an episode date, runtime, character status, theory label, guide detail, or internal link, include the page URL and the specific sentence or section that needs review.</p>
+
+          <h2>Copyright or Attribution Questions</h2>
+          <p>For copyright concerns, include the exact page URL, the material involved, ownership details, and the action you are requesting. Clear information helps us review the issue quickly and professionally.</p>
+
+          <h2>Editorial Feedback</h2>
+          <p>We welcome feedback about clarity, search intent, page structure, and evidence labeling. The site is designed to be useful for fans while keeping confirmed facts, interpretation, and theory visibly distinct.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

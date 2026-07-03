@@ -1,0 +1,344 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { guides } from "../data/guides.js";
+import { pageSeo } from "../seo/siteSeo.js";
+
+const seo = pageSeo.playGame;
+
+const quickSteps = [
+  {
+    number: "01",
+    title: "Play one blind route",
+    text: "Let the first run teach you what the game treats as trust, fear, refusal, and delay.",
+  },
+  {
+    number: "02",
+    title: "Choose a replay mood",
+    text: "Commit to one mood: trust Caine, question Caine, help Pomni, follow Kinger, or stay uncertain.",
+  },
+  {
+    number: "03",
+    title: "Change the sharpest answer",
+    text: "On replay, answer the scene that felt wrong with opposite emotional logic.",
+  },
+  {
+    number: "04",
+    title: "Track the ending pull",
+    text: "Routes announce themselves through repeated pressure — stay consistent until the shape is obvious.",
+  },
+];
+
+const endings = [
+  { name: "Caine Compliance", focus: "Trust Caine", danger: "High", cue: "Obedience, praise, controlled answers" },
+  { name: "Caine Defiance", focus: "Question Caine", danger: "High", cue: "Suspicion, refusal, direct challenge" },
+  { name: "Pomni Panic", focus: "Help Pomni", danger: "Medium", cue: "Escape pressure, fear, emotional support" },
+  { name: "Kinger Clue", focus: "Follow Kinger", danger: "Medium", cue: "Odd hints, slower routes, strange room details" },
+  { name: "Mixed Unknown", focus: "Blend choices", danger: "Unknown", cue: "Delay, mixed moods, less obvious answers" },
+];
+
+const choiceSignals = [
+  { title: "Trust", signal: "Caine control rises", text: "Polished danger and clearer obedience pressure." },
+  { title: "Doubt", signal: "Defiance pressure rises", text: "Sharper reactions and a less stable Caine route." },
+  { title: "Help", signal: "Pomni panic shifts", text: "Emotional branches instead of only system clues." },
+  { title: "Follow", signal: "Kinger clues appear", text: "Strange room details as possible route language." },
+  { title: "Delay", signal: "Uncertainty builds", text: "When every direct answer feels like bait." },
+];
+
+const characterRoutes = [
+  {
+    name: "Caine",
+    label: "Control Route",
+    image: "/images/site/cast-stage.png",
+    alt: "Caine route context for TADC Mind Games",
+    href: "/characters/caine",
+    text: "Authority, praise, and direct resistance all move the run toward different pressure.",
+  },
+  {
+    name: "Pomni",
+    label: "Panic Route",
+    image: "/images/characters/pomni.png",
+    alt: "Pomni route context for TADC Mind Games",
+    href: "/characters/pomni",
+    text: "Fear, escape, and emotional support — helping her is not always the softest line.",
+  },
+  {
+    name: "Kinger",
+    label: "Clue Route",
+    image: "/images/episodes/episode-03.jpg",
+    alt: "Kinger route context for TADC Mind Games",
+    href: "/characters/kinger",
+    text: "Patience, odd hints, and treating strange details as route language.",
+  },
+];
+
+const breadcrumbs = [
+  { name: "Home", href: "/" },
+  { name: "Play Game", href: "/play-game" },
+];
+---
+
+<BaseLayout
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords}
+  image="/images/play-game/tadc-mind-games-preview.webp"
+  imageAlt="TADC Mind Games fan game preview for The Amazing Digital Circus"
+  breadcrumbs={breadcrumbs}
+>
+  <div class="circus-page page-play-game">
+    <section class="page-hero page-hero--game">
+      <div class="container">
+        <article class="game-page-hero">
+          <figure class="game-page-hero-visual">
+            <img
+              src="/images/play-game/tadc-mind-games-preview.webp"
+              alt="TADC Mind Games fan game preview"
+              width="640"
+              height="360"
+              loading="eager"
+            />
+            <span class="game-page-badge">Fan H5 · Browser</span>
+          </figure>
+          <div class="game-page-hero-copy">
+            <p class="page-hero-kicker">TADC Mind Games · Fan-made horror VN</p>
+            <h1>The Amazing Digital Circus Game — Play & Route Guide</h1>
+            <p class="game-page-lede">
+              Play the browser fan game here, then use the route desk below for endings, choice signals, and links back to canon episodes and character profiles.
+            </p>
+            <dl class="game-page-facts" aria-label="Game quick facts">
+              <div><dt>Type</dt><dd>Fan horror VN</dd></div>
+              <div><dt>Platform</dt><dd>Browser H5</dd></div>
+              <div><dt>Endings</dt><dd>5+ route pulls</dd></div>
+              <div><dt>Canon</dt><dd>Unofficial fan game</dd></div>
+            </dl>
+            <a class="game-page-jump" href="#play">Jump to game ↓</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="play-game-stage-section" id="play">
+      <div class="container">
+        <div class="play-game-stage" data-game-stage>
+          <div class="play-game-frame">
+            <iframe
+              title="TADC Mind Games browser game"
+              data-src="https://itch.io/embed-upload/17780938?color=0b0710"
+              src="about:blank"
+              allow="fullscreen; autoplay; gamepad *"
+              allowfullscreen
+              loading="eager"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+            <div class="play-game-mask" data-game-mask>
+              <div class="play-game-mask-backdrop" aria-hidden="true"></div>
+              <div class="play-game-mask-panel">
+                <img
+                  src="/images/play-game/tadc-mind-games-preview.webp"
+                  alt="TADC Mind Games play preview"
+                  width="320"
+                  height="180"
+                  loading="eager"
+                />
+                <button class="play-game-button" type="button" data-play-button aria-label="Play TADC Mind Games">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8 5.6v12.8L18.4 12 8 5.6Z"></path>
+                  </svg>
+                  Play Game
+                </button>
+                <p>Loads only after you press play — no autoplay iframe until then.</p>
+              </div>
+            </div>
+          </div>
+          <div class="play-game-toolbar">
+            <div class="play-game-status" data-game-status>Ready to load</div>
+            <div class="play-game-actions" aria-label="Game display controls">
+              <button type="button" data-fullscreen aria-label="Fullscreen game frame">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M4 9V4h5v2H6v3H4Zm11-3V4h5v5h-2V6h-3Zm3 9h2v5h-5v-2h3v-3ZM6 18h3v2H4v-5h2v3Z"></path>
+                </svg>
+              </button>
+              <button type="button" data-web-fullscreen aria-label="Toggle web fullscreen mode">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 5h14v14H5V5Zm2 2v10h10V7H7Zm2 2h6v6H9V9Z"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="inner-section">
+      <div class="container">
+        <header class="inner-section-header">
+          <p>Route desk</p>
+          <h2>First four runs and five ending pulls</h2>
+        </header>
+        <div class="play-game-desk">
+          <div class="play-game-steps">
+            {quickSteps.map((step) => (
+              <article class="play-game-step neon-panel">
+                <span>{step.number}</span>
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+              </article>
+            ))}
+          </div>
+          <div class="play-game-endings">
+            {endings.map((ending, index) => (
+              <article class="play-game-ending-card neon-panel">
+                <p>{String(index + 1).padStart(2, "0")} · {ending.focus}</p>
+                <h3>{ending.name}</h3>
+                <dl>
+                  <div>
+                    <dt>Danger</dt>
+                    <dd>{ending.danger}</dd>
+                  </div>
+                  <div>
+                    <dt>Choice cue</dt>
+                    <dd>{ending.cue}</dd>
+                  </div>
+                </dl>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="inner-section">
+      <div class="container">
+        <header class="inner-section-header">
+          <p>Choice signals</p>
+          <h2>Read the mood before you read the line</h2>
+        </header>
+        <div class="play-game-signals">
+          {choiceSignals.map((item) => (
+            <article class="play-game-signal neon-panel">
+              <strong>{item.title}</strong>
+              <span>{item.signal}</span>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="inner-section">
+      <div class="container">
+        <header class="inner-section-header">
+          <p>Character routes</p>
+          <h2>Caine, Pomni, and Kinger shape most signals</h2>
+        </header>
+        <div class="play-game-routes">
+          {characterRoutes.map((character) => (
+            <article class="play-game-route-card neon-panel">
+              <a href={character.href}>
+                <figure>
+                  <img src={character.image} alt={character.alt} width="400" height="225" loading="lazy" />
+                </figure>
+                <div>
+                  <p>{character.label}</p>
+                  <h3>{character.name}</h3>
+                  <span>{character.text}</span>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="inner-section play-game-bridge-section">
+      <div class="container">
+        <div class="play-game-bridge-grid">
+          <article class="play-game-bridge neon-panel">
+            <p class="page-hero-kicker">Show connection</p>
+            <h2>How the fan game links to TADC canon</h2>
+            <div class="play-game-bridge-copy">
+              <p>
+                TADC Mind Games borrows Caine's cheerful control, Pomni's escape panic, and Kinger's fear-and-clue logic — making this page a bridge between play traffic and episode analysis.
+              </p>
+              <p>
+                Start with the <a href="/episodes/pilot">Pilot episode guide</a> and
+                <a href="/explained/episode-1-pilot-explained">Episode 1 explained</a>.
+                Kinger players should also read
+                <a href="/episodes/the-mystery-of-mildenhall-manor">Mildenhall Manor</a>.
+              </p>
+            </div>
+            <div class="play-game-bridge-links">
+              {guides.map((guide) => (
+                <a class="detail-cta-link" href={`/guides/${guide.addressBar}`}>{guide.title}</a>
+              ))}
+              <a class="detail-cta-link" href="https://tadcmindgames.org/" target="_blank" rel="noopener">
+                External route hub →
+              </a>
+            </div>
+          </article>
+          <article class="play-game-faq neon-panel">
+            <p class="page-hero-kicker">FAQ</p>
+            <h2>Common player questions</h2>
+            <div class="play-game-faq-list">
+              <details open>
+                <summary>Can I play online here?</summary>
+                <p>Yes. Press Play Game above to load the itch.io embed on this page.</p>
+              </details>
+              <details>
+                <summary>How many endings should I track?</summary>
+                <p>Five pulls first: Caine compliance, Caine defiance, Pomni panic, Kinger clue, mixed unknown.</p>
+              </details>
+              <details>
+                <summary>Which episodes help most?</summary>
+                <p>Pilot for Caine and Pomni, Candy Carrier Chaos for identity, Mildenhall Manor for Kinger.</p>
+              </details>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const gameStage = document.querySelector("[data-game-stage]");
+    const gameIframe = gameStage?.querySelector("iframe");
+    const playButton = gameStage?.querySelector("[data-play-button]");
+    const gameMask = gameStage?.querySelector("[data-game-mask]");
+    const gameStatus = gameStage?.querySelector("[data-game-status]");
+    const fullscreenButton = gameStage?.querySelector("[data-fullscreen]");
+    const webFullscreenButton = gameStage?.querySelector("[data-web-fullscreen]");
+    let gameLoaded = false;
+
+    const loadGame = () => {
+      if (!gameIframe || gameLoaded) return;
+      gameIframe.setAttribute("src", gameIframe.getAttribute("data-src") || "about:blank");
+      gameLoaded = true;
+      gameStage?.classList.add("is-playing");
+      gameMask?.setAttribute("aria-hidden", "true");
+      if (gameStatus) gameStatus.textContent = "Game loaded";
+    };
+
+    playButton?.addEventListener("click", loadGame);
+
+    fullscreenButton?.addEventListener("click", async () => {
+      loadGame();
+      const frame = gameStage?.querySelector(".play-game-frame");
+      if (frame && "requestFullscreen" in frame) {
+        await frame.requestFullscreen();
+      }
+    });
+
+    webFullscreenButton?.addEventListener("click", () => {
+      loadGame();
+      gameStage?.classList.toggle("is-web-fullscreen");
+      document.body.classList.toggle("is-game-expanded", gameStage?.classList.contains("is-web-fullscreen"));
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && gameStage?.classList.contains("is-web-fullscreen")) {
+        gameStage.classList.remove("is-web-fullscreen");
+        document.body.classList.remove("is-game-expanded");
+      }
+    });
+  </script>
+</BaseLayout>
