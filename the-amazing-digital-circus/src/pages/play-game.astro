@@ -1,31 +1,87 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { guides } from "../data/guides.js";
 import { pageSeo } from "../seo/siteSeo.js";
+import { absoluteUrl, buildFaqSchema, buildWebPageSchema } from "../seo/jsonLd.js";
 
 const seo = pageSeo.playGame;
+const gameHub = "https://tadcmindgames.org";
+
+const gameTags = [
+  "Fan Made",
+  "Horror VN",
+  "Browser H5",
+  "Multiple Endings",
+  "Story Rich",
+  "The Amazing Digital Circus",
+];
+
+const routeHubLinks = [
+  {
+    tag: "Route",
+    label: "Walkthrough",
+    href: `${gameHub}/walkthrough`,
+    desc: "Run order, replay plan, and safe route logic for TADC Mind Games.",
+  },
+  {
+    tag: "Five",
+    label: "Endings",
+    href: `${gameHub}/endings`,
+    desc: "Known endings and the order most players chase them.",
+  },
+  {
+    tag: "Risk",
+    label: "Choices",
+    href: `${gameHub}/choices`,
+    desc: "Trust, doubt, help, follow, and delay — what each mood does.",
+  },
+  {
+    tag: "Cast",
+    label: "Characters",
+    href: `${gameHub}/characters`,
+    desc: "Caine, Pomni, and Kinger route signals on the dedicated game site.",
+  },
+  {
+    tag: "More",
+    label: "Related Games",
+    href: `${gameHub}/related-games`,
+    desc: "Short horror games to try after TADC Mind Games.",
+  },
+  {
+    tag: "Build",
+    label: "Updates",
+    href: `${gameHub}/updates`,
+    desc: "Version notes and route page status from the game hub.",
+  },
+];
 
 const quickSteps = [
   {
     number: "01",
-    title: "Play one blind route",
-    text: "Let the first run teach you what the game treats as trust, fear, refusal, and delay.",
+    title: "Play one blind run",
+    text: "Do not chase every ending immediately. Finish one route so the first ending lands properly and you learn the game's pressure rhythm.",
   },
   {
     number: "02",
-    title: "Choose a replay mood",
-    text: "Commit to one mood: trust Caine, question Caine, help Pomni, follow Kinger, or stay uncertain.",
+    title: "Pick a replay mood",
+    text: "Choose trust, doubt, panic, curiosity, or delay before your next run starts — then stay with that mood.",
   },
   {
     number: "03",
     title: "Change the sharpest answer",
-    text: "On replay, answer the scene that felt wrong with opposite emotional logic.",
+    text: "Return to the choice that felt most uncomfortable and answer with the opposite emotional logic on replay.",
   },
   {
     number: "04",
     title: "Track the ending pull",
-    text: "Routes announce themselves through repeated pressure — stay consistent until the shape is obvious.",
+    text: "If the scene changes after a consistent mood, stay with it until the ending path becomes clear.",
   },
+];
+
+const routeBranches = [
+  { label: "Trust Caine", href: `${gameHub}/choices` },
+  { label: "Question Caine", href: `${gameHub}/choices` },
+  { label: "Help Pomni", href: `${gameHub}/choices` },
+  { label: "Follow Kinger", href: `${gameHub}/choices` },
 ];
 
 const endings = [
@@ -37,11 +93,11 @@ const endings = [
 ];
 
 const choiceSignals = [
-  { title: "Trust", signal: "Caine control rises", text: "Polished danger and clearer obedience pressure." },
-  { title: "Doubt", signal: "Defiance pressure rises", text: "Sharper reactions and a less stable Caine route." },
-  { title: "Help", signal: "Pomni panic shifts", text: "Emotional branches instead of only system clues." },
-  { title: "Follow", signal: "Kinger clues appear", text: "Strange room details as possible route language." },
-  { title: "Delay", signal: "Uncertainty builds", text: "When every direct answer feels like bait." },
+  { title: "Trust", signal: "Caine control rises", when: "When you want polished danger", text: "Obedience and praise push the run toward Caine compliance pressure." },
+  { title: "Doubt", signal: "Defiance pressure rises", when: "When you want sharper reactions", text: "Suspicion and refusal steer toward Caine defiance and unstable scenes." },
+  { title: "Help", signal: "Pomni panic shifts", when: "When you want emotional branches", text: "Support and escape pressure open Pomni panic routes — not always the kindest line." },
+  { title: "Follow", signal: "Kinger clues appear", when: "When you want strange detours", text: "Patience with odd room details can unlock Kinger clue language." },
+  { title: "Delay", signal: "Uncertainty builds", when: "When every answer feels unsafe", text: "Mixed or delayed choices feed the unknown ending pull." },
 ];
 
 const characterRoutes = [
@@ -50,24 +106,60 @@ const characterRoutes = [
     label: "Control Route",
     image: "/images/site/cast-stage.png",
     alt: "Caine route context for TADC Mind Games",
-    href: "/characters/caine",
-    text: "Authority, praise, and direct resistance all move the run toward different pressure.",
+    canonHref: "/characters/caine",
+    gameHref: `${gameHub}/characters`,
+    text: "The strongest pressure point in the game. Trusting him, praising him, or pushing back can all send the scene toward different outcomes.",
   },
   {
     name: "Pomni",
     label: "Panic Route",
     image: "/images/characters/pomni.png",
     alt: "Pomni route context for TADC Mind Games",
-    href: "/characters/pomni",
-    text: "Fear, escape, and emotional support — helping her is not always the softest line.",
+    canonHref: "/characters/pomni",
+    gameHref: `${gameHub}/characters`,
+    text: "Pomni choices lean into panic, escape, and emotional pressure. Helping her is not always as simple as choosing the kindest line.",
   },
   {
     name: "Kinger",
     label: "Clue Route",
     image: "/images/episodes/episode-03.jpg",
     alt: "Kinger route context for TADC Mind Games",
-    href: "/characters/kinger",
-    text: "Patience, odd hints, and treating strange details as route language.",
+    canonHref: "/characters/kinger",
+    gameHref: `${gameHub}/characters`,
+    text: "Kinger's path is stranger and slower. Follow odd hints, watch the room, and expect clues that feel more unsettling than obvious.",
+  },
+];
+
+const faqItems = [
+  {
+    question: "Can I play TADC Mind Games online on this page?",
+    answer:
+      "Yes. Press Play Game above to load the browser embed on theamazingdigitalcircus.org. For the full route hub with walkthrough, endings, and choice pages, visit tadcmindgames.org.",
+  },
+  {
+    question: "How many endings are in TADC Mind Games?",
+    answer:
+      "The current build has five ending paths to chase: Caine compliance, Caine defiance, Pomni panic, Kinger clue, and mixed unknown. See the ending tracker below or the endings hub on tadcmindgames.org.",
+  },
+  {
+    question: "Which characters appear in the game?",
+    answer:
+      "The visible cast centers on Caine, Pomni, and Kinger. Use the TADC Mind Games characters page for route roles and ending links, and our canon character profiles for the official animation.",
+  },
+  {
+    question: "Where should I go after my first ending?",
+    answer:
+      "Open the endings hub on tadcmindgames.org if you want another outcome, or the choices page if you remember the answer that made the route feel dangerous.",
+  },
+  {
+    question: "Is TADC Mind Games official?",
+    answer:
+      "No. TADC Mind Games is a fan-made horror visual novel inspired by The Amazing Digital Circus. It is not produced by GLITCH Productions or Gooseworx. This page is an unofficial fan resource on theamazingdigitalcircus.org.",
+  },
+  {
+    question: "Which TADC episodes help before playing?",
+    answer:
+      "Pilot for Caine and Pomni, Candy Carrier Chaos for identity pressure, and Mildenhall Manor for Kinger. Pair episodes with our Explained videos for canon context before fan-game theories.",
   },
 ];
 
@@ -75,6 +167,19 @@ const breadcrumbs = [
   { name: "Home", href: "/" },
   { name: "Play Game", href: "/play-game" },
 ];
+
+const pageUrl = absoluteUrl("/play-game");
+const { "@context": _wp, ...webPageNode } = buildWebPageSchema({
+  pageUrl,
+  title: seo.title,
+  description: seo.description,
+  image: "/images/play-game/tadc-mind-games-preview.webp",
+});
+const { "@context": _fq, ...faqNode } = buildFaqSchema(faqItems);
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [webPageNode, faqNode],
+};
 ---
 
 <BaseLayout
@@ -84,6 +189,7 @@ const breadcrumbs = [
   image="/images/play-game/tadc-mind-games-preview.webp"
   imageAlt="TADC Mind Games fan game preview for The Amazing Digital Circus"
   breadcrumbs={breadcrumbs}
+  jsonLd={jsonLd}
 >
   <div class="circus-page page-play-game">
     <section class="page-hero page-hero--game">
@@ -97,21 +203,31 @@ const breadcrumbs = [
               height="360"
               loading="eager"
             />
-            <span class="game-page-badge">Fan H5 · Browser</span>
+            <span class="game-page-badge">Horror VN · Browser H5</span>
           </figure>
           <div class="game-page-hero-copy">
-            <p class="page-hero-kicker">TADC Mind Games · Fan-made horror VN</p>
-            <h1>The Amazing Digital Circus Game — Play & Route Guide</h1>
+            <p class="page-hero-kicker">Fan-made · Inspired by The Amazing Digital Circus</p>
+            <h1>The Amazing Digital Circus Game — Play Game</h1>
             <p class="game-page-lede">
-              Play the browser fan game here, then use the route desk below for endings, choice signals, and links back to canon episodes and character profiles.
+              Step into TADC Mind Games, follow the wrong-looking doors, and use the route hub when Caine starts making every answer feel unsafe. Play here, then open the full walkthrough on our dedicated game site.
             </p>
+            <ul class="game-page-tags" aria-label="Game tags">
+              {gameTags.map((tag) => (
+                <li>{tag}</li>
+              ))}
+            </ul>
             <dl class="game-page-facts" aria-label="Game quick facts">
-              <div><dt>Type</dt><dd>Fan horror VN</dd></div>
+              <div><dt>Format</dt><dd>Horror visual novel</dd></div>
               <div><dt>Platform</dt><dd>Browser H5</dd></div>
-              <div><dt>Endings</dt><dd>5+ route pulls</dd></div>
-              <div><dt>Canon</dt><dd>Unofficial fan game</dd></div>
+              <div><dt>Endings</dt><dd>5 known routes</dd></div>
+              <div><dt>Status</dt><dd>Unofficial fan game</dd></div>
             </dl>
-            <a class="game-page-jump" href="#play">Jump to game ↓</a>
+            <div class="game-page-hero-actions">
+              <a class="game-page-jump" href="#play">Play on this page ↓</a>
+              <a class="detail-cta-link" href={gameHub} target="_blank" rel="noopener noreferrer">
+                Full route hub on tadcmindgames.org →
+              </a>
+            </div>
           </div>
         </article>
       </div>
@@ -146,7 +262,7 @@ const breadcrumbs = [
                   </svg>
                   Play Game
                 </button>
-                <p>Loads only after you press play — no autoplay iframe until then.</p>
+                <p>Press to load the itch.io embed — no autoplay until you choose to start.</p>
               </div>
             </div>
           </div>
@@ -166,43 +282,32 @@ const breadcrumbs = [
             </div>
           </div>
         </div>
+        <p class="play-game-trust">
+          <strong>Editorial note:</strong> TADC Mind Games is a fan-made title inspired by
+          <em>The Amazing Digital Circus</em>. It is not official canon. For deep route notes, endings, and choice breakdowns maintained by the same team, use
+          <a href={gameHub} target="_blank" rel="noopener noreferrer">tadcmindgames.org</a>.
+        </p>
       </div>
     </section>
 
     <section class="inner-section">
       <div class="container">
         <header class="inner-section-header">
-          <p>Route desk</p>
-          <h2>First four runs and five ending pulls</h2>
+          <p>Game route hub</p>
+          <h2>Routes, endings, and dangerous choices in one place</h2>
         </header>
-        <div class="play-game-desk">
-          <div class="play-game-steps">
-            {quickSteps.map((step) => (
-              <article class="play-game-step neon-panel">
-                <span>{step.number}</span>
-                <h3>{step.title}</h3>
-                <p>{step.text}</p>
-              </article>
-            ))}
-          </div>
-          <div class="play-game-endings">
-            {endings.map((ending, index) => (
-              <article class="play-game-ending-card neon-panel">
-                <p>{String(index + 1).padStart(2, "0")} · {ending.focus}</p>
-                <h3>{ending.name}</h3>
-                <dl>
-                  <div>
-                    <dt>Danger</dt>
-                    <dd>{ending.danger}</dd>
-                  </div>
-                  <div>
-                    <dt>Choice cue</dt>
-                    <dd>{ending.cue}</dd>
-                  </div>
-                </dl>
-              </article>
-            ))}
-          </div>
+        <p class="play-game-section-lede">
+          Jump from the embed into walkthrough help, ending trackers, choice signals, and version updates on our dedicated TADC Mind Games site — without digging through scattered posts.
+        </p>
+        <div class="play-game-hub">
+          {routeHubLinks.map((item) => (
+            <a class="play-game-hub-card neon-panel" href={item.href} target="_blank" rel="noopener noreferrer">
+              <span class="play-game-hub-tag">{item.tag}</span>
+              <strong>{item.label}</strong>
+              <p>{item.desc}</p>
+              <span class="play-game-hub-go">Open on tadcmindgames.org →</span>
+            </a>
+          ))}
         </div>
       </div>
     </section>
@@ -210,7 +315,108 @@ const breadcrumbs = [
     <section class="inner-section">
       <div class="container">
         <header class="inner-section-header">
-          <p>Choice signals</p>
+          <p>Quick start</p>
+          <h2>A compact route plan for your first four runs</h2>
+        </header>
+        <div class="play-game-steps">
+          {quickSteps.map((step) => (
+            <article class="play-game-step neon-panel">
+              <span>{step.number}</span>
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="inner-section">
+      <div class="container">
+        <header class="inner-section-header">
+          <p>Choice route map</p>
+          <h2>Every answer pushes the game toward pressure, panic, trust, or collapse</h2>
+        </header>
+        <div class="play-game-route-map neon-panel">
+          <p class="play-game-route-map-start">Enter the Digital Circus</p>
+          <div class="play-game-route-map-branch">
+            {routeBranches.map((branch) => (
+              <a href={branch.href} target="_blank" rel="noopener noreferrer">{branch.label}</a>
+            ))}
+          </div>
+          <p class="play-game-route-map-end">Ending path unknown until mood stays consistent</p>
+          <a class="detail-cta-link" href={`${gameHub}/choices`} target="_blank" rel="noopener noreferrer">
+            Full choice guide on tadcmindgames.org →
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="inner-section">
+      <div class="container">
+        <header class="inner-section-header">
+          <p>Ending tracker</p>
+          <h2>Five routes, five different kinds of bad idea</h2>
+        </header>
+        <div class="play-game-table-wrap neon-panel">
+          <table class="play-game-table">
+            <thead>
+              <tr>
+                <th scope="col">Ending path</th>
+                <th scope="col">Route focus</th>
+                <th scope="col">Danger</th>
+                <th scope="col">Choice cue</th>
+              </tr>
+            </thead>
+            <tbody>
+              {endings.map((ending) => (
+                <tr>
+                  <th scope="row">{ending.name}</th>
+                  <td>{ending.focus}</td>
+                  <td>{ending.danger}</td>
+                  <td>{ending.cue}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="play-game-table-note">
+          Chasing order most players use: Caine trust → Caine defiance → Pomni support → Kinger curiosity → mixed choices.
+          <a href={`${gameHub}/endings`} target="_blank" rel="noopener noreferrer">See ending details on tadcmindgames.org</a>.
+        </p>
+      </div>
+    </section>
+
+    <section class="inner-section">
+      <div class="container">
+        <header class="inner-section-header">
+          <p>Current cast</p>
+          <h2>Three characters shape most of the danger</h2>
+        </header>
+        <div class="play-game-routes">
+          {characterRoutes.map((character) => (
+            <article class="play-game-route-card neon-panel">
+              <figure>
+                <img src={character.image} alt={character.alt} width="400" height="225" loading="lazy" />
+              </figure>
+              <div class="play-game-route-body">
+                <p>{character.label}</p>
+                <h3>{character.name}</h3>
+                <span>{character.text}</span>
+                <div class="play-game-route-links">
+                  <a class="detail-cta-link" href={character.canonHref}>TADC canon profile</a>
+                  <a class="detail-cta-link" href={character.gameHref} target="_blank" rel="noopener noreferrer">Game route file →</a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="inner-section">
+      <div class="container">
+        <header class="inner-section-header">
+          <p>Choice matrix</p>
           <h2>Read the mood before you read the line</h2>
         </header>
         <div class="play-game-signals">
@@ -218,35 +424,15 @@ const breadcrumbs = [
             <article class="play-game-signal neon-panel">
               <strong>{item.title}</strong>
               <span>{item.signal}</span>
+              <em>{item.when}</em>
               <p>{item.text}</p>
             </article>
           ))}
         </div>
-      </div>
-    </section>
-
-    <section class="inner-section">
-      <div class="container">
-        <header class="inner-section-header">
-          <p>Character routes</p>
-          <h2>Caine, Pomni, and Kinger shape most signals</h2>
-        </header>
-        <div class="play-game-routes">
-          {characterRoutes.map((character) => (
-            <article class="play-game-route-card neon-panel">
-              <a href={character.href}>
-                <figure>
-                  <img src={character.image} alt={character.alt} width="400" height="225" loading="lazy" />
-                </figure>
-                <div>
-                  <p>{character.label}</p>
-                  <h3>{character.name}</h3>
-                  <span>{character.text}</span>
-                </div>
-              </a>
-            </article>
-          ))}
-        </div>
+        <p class="play-game-table-note">
+          <a href={`${gameHub}/choices`} target="_blank" rel="noopener noreferrer">Open the full choice matrix on tadcmindgames.org</a>
+          for scene-level examples and replay notes.
+        </p>
       </div>
     </section>
 
@@ -254,44 +440,36 @@ const breadcrumbs = [
       <div class="container">
         <div class="play-game-bridge-grid">
           <article class="play-game-bridge neon-panel">
-            <p class="page-hero-kicker">Show connection</p>
-            <h2>How the fan game links to TADC canon</h2>
+            <p class="page-hero-kicker">Canon context</p>
+            <h2>How the fan game connects to the official show</h2>
             <div class="play-game-bridge-copy">
               <p>
-                TADC Mind Games borrows Caine's cheerful control, Pomni's escape panic, and Kinger's fear-and-clue logic — making this page a bridge between play traffic and episode analysis.
+                TADC Mind Games borrows Caine's cheerful control, Pomni's escape panic, and Kinger's fear-and-clue logic from the animation. Our episode and Explained pages keep canon facts separate from fan-game speculation.
               </p>
               <p>
-                Start with the <a href="/episodes/pilot">Pilot episode guide</a> and
-                <a href="/explained/episode-1-pilot-explained">Episode 1 explained</a>.
-                Kinger players should also read
-                <a href="/episodes/the-mystery-of-mildenhall-manor">Mildenhall Manor</a>.
+                Recommended canon reading before or after a run:
+                <a href="/episodes/pilot">Pilot</a>,
+                <a href="/explained/episode-1-pilot-explained">Episode 1 Explained</a>,
+                <a href="/episodes/the-mystery-of-mildenhall-manor">Mildenhall Manor</a>, and
+                <a href="/guides/the-amazing-digital-circus-ending-explained">the finale ending article</a>.
               </p>
             </div>
             <div class="play-game-bridge-links">
-              {guides.map((guide) => (
-                <a class="detail-cta-link" href={`/guides/${guide.addressBar}`}>{guide.title}</a>
-              ))}
-              <a class="detail-cta-link" href="https://tadcmindgames.org/" target="_blank" rel="noopener">
-                External route hub →
-              </a>
+              <a class="detail-cta-link" href="/episodes">All episodes</a>
+              <a class="detail-cta-link" href="/characters">Character profiles</a>
+              <a class="detail-cta-link" href={`${gameHub}/related-games`} target="_blank" rel="noopener noreferrer">Related horror games →</a>
             </div>
           </article>
           <article class="play-game-faq neon-panel">
             <p class="page-hero-kicker">FAQ</p>
-            <h2>Common player questions</h2>
+            <h2>TADC Mind Games questions players ask first</h2>
             <div class="play-game-faq-list">
-              <details open>
-                <summary>Can I play online here?</summary>
-                <p>Yes. Press Play Game above to load the itch.io embed on this page.</p>
-              </details>
-              <details>
-                <summary>How many endings should I track?</summary>
-                <p>Five pulls first: Caine compliance, Caine defiance, Pomni panic, Kinger clue, mixed unknown.</p>
-              </details>
-              <details>
-                <summary>Which episodes help most?</summary>
-                <p>Pilot for Caine and Pomni, Candy Carrier Chaos for identity, Mildenhall Manor for Kinger.</p>
-              </details>
+              {faqItems.map((item, index) => (
+                <details open={index === 0}>
+                  <summary>{item.question}</summary>
+                  <p>{item.answer}</p>
+                </details>
+              ))}
             </div>
           </article>
         </div>

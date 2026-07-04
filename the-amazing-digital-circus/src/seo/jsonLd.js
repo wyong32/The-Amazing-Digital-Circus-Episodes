@@ -85,3 +85,22 @@ export function buildWebPageSchema({ pageUrl, title, description, image = social
     image: absoluteUrl(image),
   };
 }
+
+/**
+ * FAQ 页（如 Play Game）
+ * @param {{ question: string, answer: string }[]} items
+ */
+export function buildFaqSchema(items) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: items.map(({ question, answer }) => ({
+      "@type": "Question",
+      name: question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: answer,
+      },
+    })),
+  };
+}

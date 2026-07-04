@@ -55,9 +55,9 @@ export const pageSeo = {
   playGame: {
     title: "Play TADC Mind Games Online | Routes & Endings",
     description:
-      "Play TADC Mind Games online in your browser, then use route notes for Caine, Pomni, and Kinger choices, endings, choice signals, and links to episode context.",
+      "Play TADC Mind Games in your browser on theamazingdigitalcircus.org, then follow route notes, five endings, and choice signals with links to tadcmindgames.org and episode canon.",
     keywords:
-      "The Amazing Digital Circus game, TADC Mind Games, play TADC online, TADC fan game endings, Digital Circus game routes",
+      "The Amazing Digital Circus game, TADC Mind Games, play TADC online, TADC fan game endings, Digital Circus game routes, tadcmindgames",
   },
   guides: {
     title: "The Amazing Digital Circus Ending & Parents Articles",
