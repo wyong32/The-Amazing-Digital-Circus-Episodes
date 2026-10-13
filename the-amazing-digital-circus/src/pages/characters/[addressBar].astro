@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import AdBanner from "../../components/AdBanner.astro";
 import { characters, profileDetailHtml, profileReadingHtml } from "../../data/characters.js";
 import { episodes } from "../../data/episodes.js";
 import { absoluteUrl, buildWebPageSchema } from "../../seo/jsonLd.js";
@@ -118,6 +119,8 @@ const jsonLd = buildWebPageSchema({
           </article>
         </div>
       </section>
+  <!-- 首个广告固定在完整 Hero 之后，中间位置由正文高度决定。 -->
+  <AdBanner position="start" />
 
       <section class="circus-section">
         <div class="container">
@@ -179,6 +182,7 @@ const jsonLd = buildWebPageSchema({
           </article>
         </div>
       </section>
+
 
       <section class="circus-section circus-section--last">
         <div class="container">

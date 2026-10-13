@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import AdBanner from "../../components/AdBanner.astro";
 import { pageSeo, siteEmail, siteName } from "../../seo/siteSeo.js";
 ---
 
@@ -11,7 +12,14 @@ import { pageSeo, siteEmail, siteName } from "../../seo/siteSeo.js";
           <p class="page-hero-kicker">Legal information</p>
           <h1>The Amazing Digital Circus — Terms of Service</h1>
           <p class="page-hero-lede">Last updated: July 3, 2026</p>
-
+        </article>
+      </div>
+    </section>
+  <!-- 首个广告固定在完整 Hero 之后，中间位置由正文高度决定。 -->
+  <AdBanner position="start" />
+    <section class="inner-section">
+      <div class="container">
+        <article class="legal-panel">
           <h2>Acceptance of Terms</h2>
           <p>By using {siteName}, you agree to use the site in a lawful, respectful, and non-disruptive manner. These terms apply to all pages, guides, character profiles, embedded videos, game references, and external links available through the site.</p>
 

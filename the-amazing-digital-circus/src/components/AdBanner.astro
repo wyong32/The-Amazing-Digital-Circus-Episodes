@@ -1,0 +1,129 @@
+---
+interface Props {
+  position: "start" | "end";
+}
+const { position } = Astro.props;
+---
+
+<!-- PC 重复使用 728×90 广告位，移动端重复使用 300×250 广告位。 -->
+<div class="ad-slot" data-ad-banner data-ad-position={position}>
+  <iframe title="Advertisement" loading="lazy" scrolling="no"></iframe>
+</div>
+
+<script>
+  import { chooseAdPositions } from "./adPositions.js";
+
+  const desktop = window.matchMedia("(min-width: 768px)").matches;
+  const banner = desktop
+    ? { src: "/ads/banner-728.html", width: 728, height: 90 }
+    : { src: "/ads/banner-300.html", width: 300, height: 250 };
+
+  function loadBanner(slot: HTMLElement) {
+    const frame = slot.querySelector<HTMLIFrameElement>("iframe");
+    if (!frame || frame.dataset.loaded) return;
+    // 每个广告使用独立文档，防止重复的 atOptions 和广告脚本互相覆盖。
+    frame.dataset.loaded = "true";
+    frame.width = String(banner.width);
+    frame.height = String(banner.height);
+    // 加载后保持实际广告尺寸，不缩放、不因窗口缩放重复请求广告。
+    frame.style.width = `${banner.width}px`;
+    frame.style.height = `${banner.height}px`;
+    // 标准代码放在同域 HTML 文档中，不拼接 srcdoc 或动态执行广告脚本。
+    frame.src = banner.src;
+  }
+
+  async function arrangeAds() {
+    // 字体或外部资源迟迟未响应时，也要完成初始化，避免整个页面广告一直空白。
+    await Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, 2000))]);
+    if (document.documentElement.dataset.adsInitialized) return;
+    document.documentElement.dataset.adsInitialized = "true";
+    const page = document.querySelector<HTMLElement>(".circus-page");
+    const first = document.querySelector<HTMLElement>('[data-ad-position="start"]');
+    const last = document.querySelector<HTMLElement>('[data-ad-position="end"]');
+    if (!page || !first || !last) return;
+
+    // 短页面只保留首尾两个广告，让正文区域至少有 640px，不增加中间广告。
+    const bodySections = Array.from(page.children).filter((node): node is HTMLElement =>
+      node instanceof HTMLElement && node.tagName === "SECTION"
+      && !node.classList.contains("page-hero") && !node.classList.contains("stage-hero")
+    );
+    const bodyEnd = bodySections.at(-1);
+    let origin = first.getBoundingClientRect().bottom + 10;
+    let contentHeight = last.getBoundingClientRect().top - 10 - origin;
+    if (bodyEnd && contentHeight < 640) {
+      bodyEnd.style.minHeight = `${bodyEnd.getBoundingClientRect().height + 640 - contentHeight}px`;
+      contentHeight = last.getBoundingClientRect().top - 10 - origin;
+    }
+
+    const isHome = page.classList.contains("page-home");
+    const boundaries: { node: HTMLElement; before: boolean; offset: number }[] = [];
+    function addBoundary(node: HTMLElement, before = false) {
+      // 侧栏中的窄区域不放 PC 广告，避免 728px 广告压住正文或侧栏。
+      if (!node.parentElement || node.parentElement.getBoundingClientRect().width < banner.width) return;
+      const rect = node.getBoundingClientRect();
+      // 卡片网格只在整行结束后放广告，不在同一行的两张卡片之间插入。
+      if (node.tagName === "ARTICLE" && node.nextElementSibling
+        && node.nextElementSibling.getBoundingClientRect().top <= rect.top + 1) return;
+      boundaries.push({ node, before, offset: (before ? rect.top : rect.bottom) - origin });
+    }
+
+    if (isHome) {
+      // 首页严格按两个整行板块选候选点；距离不足 640px 的候选点跳过。
+      bodySections.forEach((section, index) => {
+        if ((index + 1) % 2 === 0 && index < bodySections.length - 1) addBoundary(section);
+      });
+    } else {
+      bodySections.slice(0, -1).forEach((section) => addBoundary(section));
+      page.querySelectorAll<HTMLElement>(
+        ".episode-main-column > section, .analysis-main-column > section, "
+        + ".episode-archive-grid > article, .character-roster-grid > article, "
+        + ".explained-index-grid > article"
+      ).forEach((section) => addBoundary(section));
+      // 长文章在下一小节标题之前插入，保证上一小节的标题和正文完整。
+      page.querySelectorAll<HTMLElement>(".guide-rich-copy > h2, .guide-rich-copy > h3, .legal-panel > h2")
+        .forEach((heading) => {
+          if (heading.previousElementSibling) addBoundary(heading, true);
+        });
+    }
+
+    boundaries.sort((a, b) => a.offset - b.offset);
+    for (const boundary of chooseAdPositions(boundaries, contentHeight, isHome)) {
+      const slot = first.cloneNode(true) as HTMLElement;
+      slot.dataset.adPosition = "middle";
+      // 广告占用完整网格行，避免卡片列把固定宽度 Banner 挤窄。
+      slot.style.gridColumn = "1 / -1";
+      if (boundary.before) boundary.node.before(slot);
+      else boundary.node.after(slot);
+    }
+    document.querySelectorAll<HTMLElement>("[data-ad-banner]").forEach(loadBanner);
+  }
+
+  // 只初始化一次，普通链接进行完整文档导航，换页后重新测量。
+  if (document.readyState !== "loading") arrangeAds();
+  else document.addEventListener("DOMContentLoaded", arrangeAds, { once: true });
+</script>
+
+<style>
+  .ad-slot {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+    padding: 0;
+  }
+
+  .ad-slot iframe {
+    display: block;
+    flex: none;
+    width: 300px;
+    height: 250px;
+    max-width: none;
+    border: 0;
+  }
+
+  @media (min-width: 768px) {
+    .ad-slot iframe {
+      width: 728px;
+      height: 90px;
+    }
+  }
+</style>

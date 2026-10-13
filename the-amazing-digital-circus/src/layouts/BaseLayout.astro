@@ -4,6 +4,7 @@ import "../styles/circus-ui.css";
 import "../styles/inner-pages.css";
 import AppHeader from "../components/AppHeader.astro";
 import AppFooter from "../components/AppFooter.astro";
+import AdBanner from "../components/AdBanner.astro";
 import { siteName, socialImage } from "../seo/siteSeo.js";
 import { absoluteUrl, toIsoDate } from "../seo/jsonLd.js";
 
@@ -75,6 +76,14 @@ const dateModified = toIsoDate(article?.dateModified) || datePublished;
     <meta name="twitter:image:alt" content={imageAlt} />
     {jsonLd && <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
     <title>{title}</title>
+    <!-- 全站 GA 只在公共入口加载一次，普通链接换页时重新统计。 -->
+    <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-7DKKXDLRMK"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-7DKKXDLRMK');
+    </script>
   </head>
   <body>
     <AppHeader />
@@ -97,12 +106,26 @@ const dateModified = toIsoDate(article?.dateModified) || datePublished;
     )}
     <main>
       <slot />
+      <!-- 最后一个 Banner 固定在正文全部结束之后、Footer 之前。 -->
+      <AdBanner position="end" />
     </main>
     <AppFooter />
+    <!-- 联盟弹窗广告全站加载一次，异步请求不阻塞正文与 Banner 初始化。 -->
+    <script is:inline async src="https://pl31789900.profitableratecpmnetwork.com/29/7d/ef/297def3e7815f1fec870e75f20c64654.js"></script>
   </body>
 </html>
 
 <style>
+  /* 广告与相邻板块只保留广告自身的 10px 间距，避免原有区块留白叠加。 */
+  :global(.circus-page > section:has(+ .ad-slot)),
+  :global(.circus-page > section:last-child) {
+    padding-bottom: 0;
+  }
+
+  :global(.ad-slot + section) {
+    padding-top: 0;
+  }
+
   .breadcrumb-bar {
     padding: 10px 0 0;
   }

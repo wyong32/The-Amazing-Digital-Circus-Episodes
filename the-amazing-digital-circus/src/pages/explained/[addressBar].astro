@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import AdBanner from "../../components/AdBanner.astro";
 import { analysisEssayBySlug, explainedVideos } from "../../data/explained.js";
 import { characters } from "../../data/characters.js";
 import { episodes } from "../../data/episodes.js";
@@ -84,6 +85,8 @@ const jsonLd = buildArticleSchema({
       </article>
     </div>
   </section>
+  <!-- 首个广告固定在完整 Hero 之后，中间位置由正文高度决定。 -->
+  <AdBanner position="start" />
 
   <section class="circus-section circus-section--last">
     <div class="container">

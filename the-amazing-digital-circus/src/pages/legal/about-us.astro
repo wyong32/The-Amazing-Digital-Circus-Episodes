@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import AdBanner from "../../components/AdBanner.astro";
 import { pageSeo, siteName } from "../../seo/siteSeo.js";
 ---
 
@@ -11,7 +12,14 @@ import { pageSeo, siteName } from "../../seo/siteSeo.js";
           <p class="page-hero-kicker">About the site</p>
           <h1>The Amazing Digital Circus — About Us</h1>
           <p class="page-hero-lede">Independent fan guide and analysis library for GLITCH's The Amazing Digital Circus.</p>
-
+        </article>
+      </div>
+    </section>
+  <!-- 首个广告固定在完整 Hero 之后，中间位置由正文高度决定。 -->
+  <AdBanner position="start" />
+    <section class="inner-section">
+      <div class="container">
+        <article class="legal-panel">
           <h2>What This Site Covers</h2>
           <p>{siteName} is built around The Amazing Digital Circus as a complete viewing companion. The site focuses on episode explanations, official episode context, character evidence, lore guides, parent-facing notes, and TADC Mind Games route information.</p>
 

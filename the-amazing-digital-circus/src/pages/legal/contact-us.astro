@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import AdBanner from "../../components/AdBanner.astro";
 import { pageSeo, siteEmail, siteName } from "../../seo/siteSeo.js";
 ---
 
@@ -11,7 +12,14 @@ import { pageSeo, siteEmail, siteName } from "../../seo/siteSeo.js";
           <p class="page-hero-kicker">Contact</p>
           <h1>The Amazing Digital Circus — Contact Us</h1>
           <p class="page-hero-lede">Editorial corrections, rights questions, and site feedback</p>
-
+        </article>
+      </div>
+    </section>
+  <!-- 首个广告固定在完整 Hero 之后，中间位置由正文高度决定。 -->
+  <AdBanner position="start" />
+    <section class="inner-section">
+      <div class="container">
+        <article class="legal-panel">
           <h2>Email</h2>
           <p>You can contact {siteName} at <a href={`mailto:${siteEmail}`}>{siteEmail}</a>. We do not use a public form on this page, so email is the correct channel for direct requests.</p>
 

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import AdBanner from "../../components/AdBanner.astro";
 import { episodes } from "../../data/episodes.js";
 import { pageSeo } from "../../seo/siteSeo.js";
 
@@ -30,6 +31,8 @@ const breadcrumbs = [
         </div>
       </div>
     </section>
+  <!-- 首个广告固定在完整 Hero 之后，中间位置由正文高度决定。 -->
+  <AdBanner position="start" />
 
     <section class="inner-section">
       <div class="container">

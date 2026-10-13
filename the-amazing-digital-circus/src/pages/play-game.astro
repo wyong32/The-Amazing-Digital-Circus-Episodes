@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import AdBanner from "../components/AdBanner.astro";
 import { pageSeo } from "../seo/siteSeo.js";
 import { absoluteUrl, buildFaqSchema, buildWebPageSchema } from "../seo/jsonLd.js";
 
@@ -232,6 +233,8 @@ const jsonLd = {
         </article>
       </div>
     </section>
+  <!-- 首个广告固定在完整 Hero 之后，中间位置由正文高度决定。 -->
+  <AdBanner position="start" />
 
     <section class="play-game-stage-section" id="play">
       <div class="container">
@@ -435,6 +438,7 @@ const jsonLd = {
         </p>
       </div>
     </section>
+
 
     <section class="inner-section play-game-bridge-section">
       <div class="container">

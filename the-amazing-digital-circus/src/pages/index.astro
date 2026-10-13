@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import AdBanner from "../components/AdBanner.astro";
 import { episodes } from "../data/episodes.js";
 import { explainedVideos } from "../data/explained.js";
 import { characters } from "../data/characters.js";
@@ -106,6 +107,8 @@ const showTickets = [
     </div>
     <div class="stage-curtain-edge" aria-hidden="true"></div>
   </section>
+  <!-- 首个广告固定在完整 Hero 之后，中间位置由正文高度决定。 -->
+  <AdBanner position="start" />
 
   <section class="home-section">
     <div class="container">
@@ -175,6 +178,8 @@ const showTickets = [
     </div>
   </section>
 
+  <!-- 解说和官方剧集两个完整板块之后。 -->
+
   <section class="home-section">
     <div class="container">
       <div class="dual-grid">
@@ -229,7 +234,9 @@ const showTickets = [
     </div>
   </section>
 
-  <section class="home-section home-section--last">
+  <!-- 角色游戏组合与指南两个完整板块之后。 -->
+
+  <section class="home-section home-section--tight">
     <div class="container">
       <header class="block-head">
         <p>About this site</p>
@@ -238,6 +245,11 @@ const showTickets = [
           This is an unofficial English fan guide for GLITCH's <em>The Amazing Digital Circus</em>. Use <strong>Episodes</strong> when you want official video embeds, runtimes, and plot context; use <strong>Explained</strong> for scene-by-scene breakdowns, hidden details, and clearly marked theories; browse <strong>Characters</strong> for profile timelines and evidence; and open <strong>Guides</strong> for watch order, abstraction lore, endings, and the TADC Mind Games fan game.
         </p>
       </header>
+    </div>
+  </section>
+
+  <section class="home-section home-section--last">
+    <div class="container">
       <div class="faq-grid">
         <article class="neon-panel faq-card">
           <h3>New viewer?</h3>

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import AdBanner from "../../components/AdBanner.astro";
 import { pageSeo, siteEmail, siteName } from "../../seo/siteSeo.js";
 ---
 
@@ -11,7 +12,14 @@ import { pageSeo, siteEmail, siteName } from "../../seo/siteSeo.js";
           <p class="page-hero-kicker">Legal information</p>
           <h1>The Amazing Digital Circus — Privacy Policy</h1>
           <p class="page-hero-lede">Last updated: July 3, 2026</p>
-
+        </article>
+      </div>
+    </section>
+  <!-- 首个广告固定在完整 Hero 之后，中间位置由正文高度决定。 -->
+  <AdBanner position="start" />
+    <section class="inner-section">
+      <div class="container">
+        <article class="legal-panel">
           <h2>Purpose of This Policy</h2>
           <p>{siteName} is an independent editorial fan guide for The Amazing Digital Circus. This Privacy Policy explains how the site may handle basic technical information, embedded media, analytics signals, and direct email communication.</p>
 
